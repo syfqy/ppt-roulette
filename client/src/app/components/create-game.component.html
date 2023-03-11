@@ -1,0 +1,8 @@
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="hostName" />
+  </mat-form-field>
+
+  <button mat-raised-button [disabled]="form.invalid">Create!</button>
+</form>

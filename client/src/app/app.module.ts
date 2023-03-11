@@ -8,14 +8,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './components/home.component';
 import { CreateGameComponent } from './components/create-game.component';
 import { JoinGameComponent } from './components/join-game.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, CreateGameComponent, JoinGameComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    CreateGameComponent,
+    JoinGameComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MaterialModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
