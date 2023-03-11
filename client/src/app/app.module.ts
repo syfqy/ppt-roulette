@@ -5,10 +5,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from '../material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HomeComponent } from './components/home.component';
+import { CreateGameComponent } from './components/create-game.component';
+import { JoinGameComponent } from './components/join-game.component';
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, MaterialModule, BrowserAnimationsModule],
+  declarations: [AppComponent, HomeComponent, CreateGameComponent, JoinGameComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    MaterialModule,
+    BrowserAnimationsModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
