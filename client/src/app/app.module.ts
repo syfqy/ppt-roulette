@@ -9,6 +9,8 @@ import { HomeComponent } from './components/home.component';
 import { CreateGameComponent } from './components/create-game.component';
 import { JoinGameComponent } from './components/join-game.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LobbyComponent } from './components/lobby.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -16,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     HomeComponent,
     CreateGameComponent,
     JoinGameComponent,
+    LobbyComponent,
   ],
   imports: [
     BrowserModule,
@@ -23,6 +26,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MaterialModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
