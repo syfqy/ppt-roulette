@@ -11,6 +11,8 @@ import { JoinGameComponent } from './components/join-game.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LobbyComponent } from './components/lobby.component';
 import { HttpClientModule } from '@angular/common/http';
+import { rxStompServiceFactory } from './rx-stomp-service-factory';
+import { RxStompService } from './services/rx-stomp.service';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,12 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: RxStompService,
+      useFactory: rxStompServiceFactory,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -10,6 +10,7 @@ const routes: Routes = [
   { path: 'game/create', component: CreateGameComponent },
   { path: 'game/join', component: JoinGameComponent },
   { path: 'lobby/:gameId', component: LobbyComponent },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({

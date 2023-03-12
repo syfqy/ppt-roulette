@@ -1,1 +1,24 @@
-<p>lobby works!</p>
+<h2>Game: {{ gameId }} Lobby</h2>
+<h2>Player Name: {{ currentPlayer.name }}</h2>
+<h2>Player Role: {{ currentPlayer.role }}</h2>
+
+<h2 *ngIf="!!hostPlayer">Host: {{ hostPlayer.name }}</h2>
+
+<div class="player-list">
+  <ol>
+    <li *ngFor="let player of players">
+      {{ player.name }} <span *ngIf="player.host">HOST</span>
+      <span>{{ player.role }}</span>
+    </li>
+  </ol>
+</div>
+
+<button
+  *ngIf="currentPlayer.host"
+  [disabled]="!readyToStart()"
+  mat-raised-button
+  color="primary"
+  (click)="startGame()"
+>
+  Start Game
+</button>

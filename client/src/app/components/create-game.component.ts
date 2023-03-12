@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LobbyService } from '../services/lobby.service';
+import { PlayerService } from '../services/player.service';
 
 @Component({
   selector: 'app-create-game',
@@ -14,7 +15,8 @@ export class CreateGameComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private lobbyService: LobbyService
+    private lobbyService: LobbyService,
+    private playerService: PlayerService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +40,10 @@ export class CreateGameComponent implements OnInit {
       .then((res) => {
         const gameId = res.gameId;
         console.log('>>> Game created: ' + gameId);
+
+        // register player
+        this.playerService.setPlayerName(hostName);
+        this.playerService.setHost(true);
 
         // go to game lobby
         this.router.navigate(['lobby', gameId]);
