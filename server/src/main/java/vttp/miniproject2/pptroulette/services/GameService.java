@@ -1,8 +1,10 @@
 package vttp.miniproject2.pptroulette.services;
 
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.repositories.GameCache;
 
 @Service
@@ -22,5 +24,9 @@ public class GameService {
     }
 
     return gameId;
+  }
+
+  public List<Player> addPlayer(Player player, String gameId) {
+    return gameCache.addPlayer(player, gameId);
   }
 }
