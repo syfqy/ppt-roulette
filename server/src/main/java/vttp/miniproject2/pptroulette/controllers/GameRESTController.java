@@ -5,8 +5,11 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import java.io.StringReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +39,22 @@ public class GameRESTController {
 
     System.out.println(">>> Created new lobby: " + gameId);
 
+    return ResponseEntity.ok(resp.toString());
+  }
+
+  @GetMapping(path = "/join/{gameId}")
+  public ResponseEntity<String> joinLobby(@PathVariable String gameId) {
+    // get gameId
+    if (!gameService.isGameOngoing(gameId)) {
+      System.out.println(">>> gameId: %s not found".formatted(gameId));
+      JsonObject resp = Json
+        .createObjectBuilder()
+        .add("error", "gameId %s not found".formatted(gameId))
+        .build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resp.toString());
+    }
+    System.out.println(">>> gameId: %s available to join".formatted(gameId));
+    JsonObject resp = Json.createObjectBuilder().add("gameId", gameId).build();
     return ResponseEntity.ok(resp.toString());
   }
 }

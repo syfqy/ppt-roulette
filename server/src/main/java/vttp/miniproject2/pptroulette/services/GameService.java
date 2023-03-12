@@ -29,4 +29,8 @@ public class GameService {
   public List<Player> addPlayer(Player player, String gameId) {
     return gameCache.addPlayer(player, gameId);
   }
+
+  public boolean isGameOngoing(String gameId) {
+    return gameCache.isGameOngoing(gameId);
+  }
 }

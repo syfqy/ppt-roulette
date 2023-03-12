@@ -1,1 +1,14 @@
-<p>join-game works!</p>
+<!-- SMELL: Possible duplicate of createGame html and ts -->
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="playerName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Game Id</mat-label>
+    <input matInput formControlName="gameId" />
+  </mat-form-field>
+
+  <button mat-raised-button>Join!</button>
+</form>
