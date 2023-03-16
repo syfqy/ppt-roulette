@@ -50,4 +50,10 @@ public class GameController {
 
     return players;
   }
+
+  @MessageMapping("/start/{gameId}")
+  @SendTo("/topic/start/{gameId}")
+  public boolean sendGameStart(@DestinationVariable String gameId) {
+    return true;
+  }
 }

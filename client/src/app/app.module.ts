@@ -13,6 +13,9 @@ import { LobbyComponent } from './components/lobby.component';
 import { HttpClientModule } from '@angular/common/http';
 import { rxStompServiceFactory } from './rx-stomp-service-factory';
 import { RxStompService } from './services/rx-stomp.service';
+import { GameSpeakerViewComponent } from './components/game-speaker-view.component';
+import { GameAssistantViewComponent } from './components/game-assistant-view.component';
+import { GameJudgeViewComponent } from './components/game-judge-view.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +24,9 @@ import { RxStompService } from './services/rx-stomp.service';
     CreateGameComponent,
     JoinGameComponent,
     LobbyComponent,
+    GameSpeakerViewComponent,
+    GameAssistantViewComponent,
+    GameJudgeViewComponent,
   ],
   imports: [
     BrowserModule,
