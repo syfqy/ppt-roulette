@@ -74,4 +74,14 @@ public class GameController {
   ) {
     return imageUrl;
   }
+
+  @MessageMapping("/reactions/{gameId}")
+  @SendTo("/topic/reactions/{gameId}")
+  public String sendReaction(
+    @DestinationVariable String gameId,
+    String message
+  ) {
+    System.out.println(">>> message: " + message);
+    return message;
+  }
 }

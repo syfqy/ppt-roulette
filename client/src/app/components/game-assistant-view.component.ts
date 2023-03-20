@@ -77,6 +77,7 @@ export class GameAssistantViewComponent implements OnInit {
   }
 
   selectNextImage(imageUrl: string): void {
+    // FIXME: Disable selection on image slide
     console.log('>>> asssistant selected image: ' + imageUrl);
 
     this.rxStompService.publish({
