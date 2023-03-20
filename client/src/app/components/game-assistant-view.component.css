@@ -1,0 +1,15 @@
+.image-choices {
+    display: flex;
+}
+
+img {
+    cursor: pointer;
+    max-width: 128px;
+    max-height: 128px;
+}
+
+img:hover {
+
+    border: 10px solid skyblue;
+    
+}

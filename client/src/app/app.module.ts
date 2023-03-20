@@ -16,6 +16,7 @@ import { RxStompService } from './services/rx-stomp.service';
 import { GameSpeakerViewComponent } from './components/game-speaker-view.component';
 import { GameAssistantViewComponent } from './components/game-assistant-view.component';
 import { GameJudgeViewComponent } from './components/game-judge-view.component';
+import { GameSlideComponent } from './components/game-slide.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { GameJudgeViewComponent } from './components/game-judge-view.component';
     GameSpeakerViewComponent,
     GameAssistantViewComponent,
     GameJudgeViewComponent,
+    GameSlideComponent,
   ],
   imports: [
     BrowserModule,

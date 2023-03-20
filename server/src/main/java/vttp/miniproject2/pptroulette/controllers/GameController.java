@@ -56,4 +56,22 @@ public class GameController {
   public boolean sendGameStart(@DestinationVariable String gameId) {
     return true;
   }
+
+  @MessageMapping("/slide/{gameId}")
+  @SendTo("/topic/slide/{gameId}")
+  public Integer sendNextSlide(
+    @DestinationVariable String gameId,
+    Integer slideIdx
+  ) {
+    return slideIdx;
+  }
+
+  @MessageMapping("/nextImage/{gameId}")
+  @SendTo("/topic/image/{gameId}")
+  public String sendNextImage(
+    @DestinationVariable String gameId,
+    String imageUrl
+  ) {
+    return imageUrl;
+  }
 }

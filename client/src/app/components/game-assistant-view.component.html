@@ -1,1 +1,9 @@
-<p>game-assistant-view works!</p>
+<!-- TODO: Create assistant view and enable selection of next image -->
+<h3>Assistant: {{ this.currentPlayer.name }}</h3>
+<div class="image-choices">
+  <img
+    *ngFor="let imageUrl of images[imageIdx]"
+    [src]="imageUrl"
+    (click)="selectNextImage(imageUrl)"
+  />
+</div>

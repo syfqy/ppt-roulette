@@ -6,6 +6,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import java.io.StringReader;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vttp.miniproject2.pptroulette.models.Game;
 import vttp.miniproject2.pptroulette.models.Lobby;
+import vttp.miniproject2.pptroulette.repositories.GameRepository;
 import vttp.miniproject2.pptroulette.services.GameService;
 
 @RestController
@@ -26,6 +28,9 @@ public class GameRESTController {
 
   @Autowired
   private GameService gameService;
+
+  @Autowired
+  private GameRepository gameRepo;
 
   @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> createLobby(@RequestBody String body) {
@@ -78,6 +83,21 @@ public class GameRESTController {
       return ResponseEntity.ok(resp);
     } catch (JsonProcessingException e) {
       System.out.println(">>> Cannnot map game to JSON");
+      e.printStackTrace();
+      return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body("error");
+    }
+  }
+
+  @GetMapping(path = "/images")
+  public ResponseEntity<String> getImages() {
+    // TODO: get images from service
+    List<String> images = gameRepo.getRandomImages(9);
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return ResponseEntity.ok(mapper.writeValueAsString(images));
+    } catch (JsonProcessingException e) {
       e.printStackTrace();
       return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)

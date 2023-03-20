@@ -1,1 +1,25 @@
-<p>game-speaker-view works!</p>
+<mat-progress-spinner
+  color="primary"
+  mode="determinate"
+  [value]="(timeElapsed / totalTime) * 100"
+>
+</mat-progress-spinner>
+<p>Time left: {{ totalTime - timeElapsed | number : "1.0-0" }}</p>
+<p>Slide: {{ slideIdx + 1 }} / 6</p>
+
+<app-game-slide [slideContent]="currentSlide"></app-game-slide>
+
+<!-- projectable templates -->
+<ng-template #topicSlide>
+  <h2>{{ currentGame.topic }}</h2>
+</ng-template>
+<ng-template #promptSlide>
+  <h3>{{ currentGame.prompts[promptIdx] }}</h3>
+</ng-template>
+<ng-template #imageSlide>
+  <img style="max-width: 480px" [src]="currentImage" />
+</ng-template>
+
+<div class="reaction-list">
+  <p *ngFor="let reaction of reactions">{{ reaction }}</p>
+</div>
