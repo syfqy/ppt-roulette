@@ -1,10 +1,11 @@
 import { RxStompConfig } from '@stomp/rx-stomp';
 import * as SockJS from 'sockjs-client';
+import { environment } from 'src/environments/environment';
 
 export const myRxStompConfig: RxStompConfig = {
   // Which server?
   webSocketFactory() {
-    return new SockJS('http://localhost:8080/ws');
+    return new SockJS(environment.wsEndpoint);
   },
 
   // Headers
