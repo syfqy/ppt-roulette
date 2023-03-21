@@ -7,7 +7,7 @@ import { lastValueFrom } from 'rxjs';
 })
 export class LobbyService {
   /**
-   * Responsible for creation of game lobby via server
+   * Responsible for creating and joining game lobby via server
    * @param httpClient
    */
   constructor(private httpClient: HttpClient) {}

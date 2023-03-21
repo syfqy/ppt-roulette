@@ -15,7 +15,7 @@
 
 <button
   *ngIf="currentPlayer.host"
-  [disabled]="!readyToStart()"
+  [disabled]="!isGameReadyToStart()"
   mat-raised-button
   color="primary"
   (click)="startGame()"

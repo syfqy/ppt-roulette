@@ -35,6 +35,7 @@ export class JoinGameComponent implements OnInit {
     const gameId = this.form.get('gameId')?.value;
 
     // check game exists then join game lobby
+    // TODO: handle cannot join lobby exceptions (e.g. lobby full, invalid game id)
     this.lobbyService
       .joinLobby(gameId)
       .then((res) => {

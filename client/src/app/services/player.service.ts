@@ -6,26 +6,26 @@ import { Player } from '../models/player.model';
 })
 export class PlayerService {
   /**
-   * Service provides access to player's current state.
+   * Service provides access to current player's state.
    */
 
-  private currPlayer: Player = new Player('default', '', false);
+  private player: Player = new Player('default', '', false);
 
   constructor() {}
 
   getPlayer() {
-    return this.currPlayer;
+    return this.player;
   }
 
   setPlayerName(name: string) {
-    this.currPlayer.name = name;
+    this.player.name = name;
   }
 
   setPlayerRole(role: string) {
-    this.currPlayer.role = role;
+    this.player.role = role;
   }
 
   setHost(host: boolean) {
-    this.currPlayer.host = host;
+    this.player.host = host;
   }
 }

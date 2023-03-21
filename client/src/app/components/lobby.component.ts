@@ -37,6 +37,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     console.table(this.currentPlayer);
 
     // set game id and topic
+    // SMELL: replace with function to set topics and destinations
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
       this.gameId = params['gameId'];
       this.joinTopic = `${this.joinTopic}/${this.gameId}`;
@@ -74,7 +75,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
         // if game has started, go to game view
         const isGameStarted: boolean = JSON.parse(message.body);
         if (isGameStarted) {
-          console.log('>>> host has started game');
+          console.log('>>> host has started the game');
+
+          // TODO: ignore case
+          // SMELL: replace ternaries with map
           const gameRoute =
             this.currentPlayer.role === 'Speaker'
               ? ['/game', this.gameId]
@@ -100,7 +104,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     });
   }
 
-  readyToStart(): boolean {
+  isGameReadyToStart(): boolean {
     const totalPlayers = this.players.length;
     const playerRoleCountsMap = new Map<string, number>();
 
@@ -116,8 +120,11 @@ export class LobbyComponent implements OnInit, OnDestroy {
     console.log('>>> checking if game is ready to start');
     console.log(playerRoleCountsMap);
 
+    // number of players check
     if (totalPlayers < 3 || totalPlayers > 5) return false;
 
+    // role checks
+    // TODO: ignore case
     if (playerRoleCountsMap.get('Speaker') !== 1) return false;
 
     if (playerRoleCountsMap.get('Assistant') !== 1) return false;
