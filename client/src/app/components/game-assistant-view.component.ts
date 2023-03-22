@@ -70,7 +70,7 @@ export class GameAssistantViewComponent implements OnInit {
       .watch(this.nextSlideTopic)
       .subscribe((slideIdx: any) => {
         // change to next selection
-        console.log('>>> asssistant slideIdx: ' + slideIdx);
+        console.log('>>> assistant slideIdx: ' + slideIdx);
         this.showSelection = slideIdx % 2 === 0;
         if (this.imageIdx < 2) this.imageIdx++;
       });
@@ -78,7 +78,7 @@ export class GameAssistantViewComponent implements OnInit {
 
   selectNextImage(imageUrl: string): void {
     // FIXME: Disable selection on image slide
-    console.log('>>> asssistant selected image: ' + imageUrl);
+    console.log('>>> assistant selected image: ' + imageUrl);
 
     this.rxStompService.publish({
       destination: this.nextImageDestination,
