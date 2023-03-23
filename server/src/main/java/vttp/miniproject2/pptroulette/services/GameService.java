@@ -1,7 +1,7 @@
 package vttp.miniproject2.pptroulette.services;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,10 @@ public class GameService {
   @Autowired
   private GameRepository gameRepo;
 
+  public Lobby getLobby(String gameId) {
+    return gameCache.getLobby(gameId);
+  }
+
   public String createLobby(Player host) {
     String gameId = UUID.randomUUID().toString().substring(0, 4);
 
@@ -33,20 +37,84 @@ public class GameService {
     Lobby lobby = new Lobby();
     lobby.setGameId(gameId);
     lobby.setHostName(host.getName());
+    gameCache.upsertLobby(lobby);
 
     return gameId;
   }
 
-  public List<Player> addPlayer(Player player, String gameId) {
-    return gameCache.addPlayer(player, gameId);
+  // TODO: throw exception if lobby is full
+  public Lobby addPlayer(Player player, String gameId) {
+    // get lobby from cache
+    Lobby lobby = gameCache.getLobby(gameId);
+    Integer numPlayers = lobby.getPlayers().size();
+
+    // add player
+    if (numPlayers == Lobby.MAX_NUM_PLAYERS) {
+      System.out.println(
+        ">>> Number of players in %s: %d, cannot join game".formatted(
+            gameId,
+            numPlayers
+          )
+      );
+      return lobby;
+    }
+
+    System.out.println(
+      ">>> Number of players in %s: %d, joining game...".formatted(
+          gameId,
+          numPlayers
+        )
+    );
+    lobby.addPlayer(player);
+
+    // assign roles
+    System.out.println(
+      ">>> Checking to assign roles: " + lobby.getPlayers().size()
+    );
+    if (lobby.getPlayers().size() >= Lobby.MIN_NUM_PLAYERS) {
+      System.out.println(">>> Assigning roles");
+      assignDefaultRoles(lobby);
+    }
+
+    // TODO: check game ready to start
+
+    // save lobby
+    gameCache.upsertLobby(lobby);
+
+    return getLobby(gameId);
   }
 
-  // public List<Player> removePlayer(Player player, String gameId) {
-  //   return gameCache.removePlayer(player, gameId);
-  // }
+  public Lobby removePlayer(Player player, String gameId) {
+    Lobby lobby = gameCache.getLobby(gameId);
+
+    // if no players, remove lobby
+    if (lobby.getPlayers().size() <= 1) {
+      gameCache.removeLobby(gameId);
+      gameCache.removeGame(gameId);
+      return lobby;
+    }
+
+    lobby.removePlayer(player.getName());
+
+    // TODO: clear roles
+
+    // TODO: check game to ready to start
+
+    gameCache.upsertLobby(lobby);
+
+    return gameCache.getLobby(gameId);
+  }
 
   public boolean isGameOngoing(String gameId) {
     return gameCache.isGameOngoing(gameId);
+  }
+
+  private void assignDefaultRoles(Lobby lobby) {
+    lobby.assignRole(0, "Speaker");
+    lobby.assignRole(1, "Assistant");
+    for (int i = 2; i < lobby.getPlayers().size(); i++) {
+      lobby.assignRole(i, "Judge");
+    }
   }
 
   public Game startGame(Lobby lobby) {

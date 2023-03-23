@@ -5,12 +5,14 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import vttp.miniproject2.pptroulette.models.Lobby;
+import vttp.miniproject2.pptroulette.models.LobbyUpdate;
 import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.services.GameService;
 
@@ -21,45 +23,27 @@ public class GameController {
   GameService gameService;
 
   @MessageMapping("/{gameId}")
-  @SendTo("/topic/lobby{gameId}")
-  // @MessageMapping("/join/{gameId}")
-  // @SendTo("/topic/join/{gameId}")
-  public Lobby updateLobby(@DestinationVariable String gameId, Player player) {
-    // JsonReader reader = Json.createReader(new StringReader(json));
-    // JsonObject lobbyMsg = reader.readObject();
+  @SendTo("/topic/lobby/{gameId}")
+  public Lobby updateLobby(
+    @DestinationVariable String gameId,
+    LobbyUpdate lobbyUpdate
+  ) {
+    Player player = lobbyUpdate.getPlayer();
+    String lobbyAction = lobbyUpdate.isJoining() ? "joining" : "leaving";
 
-    // // get player
-    // Player player = Player.fromJson(lobbyMsg.getJsonObject("player"));
-    // boolean isJoining = lobbyMsg.getBoolean("isJoining");
-    // String lobbyAction = isJoining ? "joining" : "leaving";
+    System.out.println(
+      ">>> Player: %s %s game: %s".formatted(
+          player.getName(),
+          lobbyAction,
+          gameId
+        )
+    );
 
-    // System.out.println(
-    //   ">>> Player: %s %s game: %s".formatted(
-    //       player.getName(),
-    //       lobbyAction,
-    //       gameId
-    //     )
-    // );
+    Lobby lobby = lobbyUpdate.isJoining()
+      ? gameService.addPlayer(player, gameId)
+      : gameService.removePlayer(player, gameId);
 
-    // List<Player> players = gameService.addPlayer(player, gameId);
-    // Lobby lobby = new Lobby();
-    // lobby.setGameId(gameId);
-    // lobby.setPlayers(players);
-    // // SMELL: should cache hostname
-    // lobby.setHostName(
-    //   players.stream().filter(p -> p.isHost()).findFirst().get().getName()
-    // );
-
-    // // set roles
-    // if (players.size() >= Lobby.MIN_NUM_PLAYERS) {
-    //   lobby.setRoles();
-    // }
-
-    // players.forEach(p -> System.out.println(p.toString()));
-    // System.out.println(">>> Number of players in lobby: " + players.size());
-
-    // return players;
-    return null;
+    return lobby;
   }
 
   @MessageMapping("/start/{gameId}")

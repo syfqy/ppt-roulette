@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import vttp.miniproject2.pptroulette.models.Lobby;
-import vttp.miniproject2.pptroulette.models.Player;
 
 @Repository
 public class GameCache {
@@ -23,7 +22,16 @@ public class GameCache {
   @Autowired
   private Gson gson;
 
-  public void createLobby(Lobby lobby) {
+  public Lobby getLobby(String gameId) {
+    String result = redisTemplate.opsForValue().get(gameId);
+    return gson.fromJson(result, Lobby.class);
+  }
+
+  public void removeLobby(String gameId) {
+    redisTemplate.opsForValue().getAndDelete(gameId);
+  }
+
+  public void upsertLobby(Lobby lobby) {
     redisTemplate.opsForValue().set(lobby.getGameId(), gson.toJson(lobby));
   }
 
@@ -37,31 +45,5 @@ public class GameCache {
 
   public boolean isGameOngoing(String gameId) {
     return redisTemplate.opsForSet().isMember("ongoingGames", gameId);
-  }
-
-  public List<Player> addPlayer(Player player, String gameId) {
-    return null;
-    //   Long numOfPlayers = redisTemplate.opsForList().size(gameId);
-
-    //   // game exists and still available slots, then add new player
-    //   if (isGameOngoing(gameId) && numOfPlayers < 5) {
-    //     System.out.println(
-    //       ">>> %d slot(s) available, joining game".formatted(5 - numOfPlayers)
-    //     );
-    //     redisTemplate.opsForList().rightPush(gameId, player.toJson().toString());
-    //   }
-
-    //   List<Player> players = redisTemplate
-    //     .opsForList()
-    //     .range(gameId, 0, -1)
-    //     .stream()
-    //     .map(p -> {
-    //       JsonReader reader = Json.createReader(new StringReader(p));
-    //       JsonObject json = reader.readObject();
-    //       return json;
-    //     })
-    //     .map(json -> Player.fromJson(json))
-    //     .toList();
-    //   return players;
   }
 }
