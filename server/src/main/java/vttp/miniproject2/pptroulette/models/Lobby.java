@@ -12,6 +12,7 @@ public class Lobby {
   private String gameId;
   private List<Player> players;
   private String hostName;
+  private boolean canStartGame = false;
 
   // TODO: Allow for selection of player
   private void setSpeaker() {
@@ -33,4 +34,14 @@ public class Lobby {
     setAssistant();
     setJudges();
   }
+  // public JsonObject toJson () {
+
+  //   JsonArray playerArr =
+
+  //   return Json.createObjectBuilder()
+  //   .add("gameId", gameId)
+  //   .add(players, players.toJson())
+  //   .build();
+  // }
+
 }

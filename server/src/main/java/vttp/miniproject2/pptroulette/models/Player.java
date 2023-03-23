@@ -11,21 +11,20 @@ public class Player {
   private String name;
   private String role;
   private boolean host;
+  // public JsonObject toJson() {
+  //   return Json
+  //     .createObjectBuilder()
+  //     .add("name", name)
+  //     .add("role", role)
+  //     .add("host", host)
+  //     .build();
+  // }
 
-  public JsonObject toJson() {
-    return Json
-      .createObjectBuilder()
-      .add("name", name)
-      .add("role", role)
-      .add("host", host)
-      .build();
-  }
-
-  public static Player fromJson(JsonObject json) {
-    Player player = new Player();
-    player.setName(json.getString("name"));
-    player.setRole(json.getString("role"));
-    player.setHost(json.getBoolean("host"));
-    return player;
-  }
+  // public static Player fromJson(JsonObject json) {
+  //   Player player = new Player();
+  //   player.setName(json.getString("name"));
+  //   player.setRole(json.getString("role"));
+  //   player.setHost(json.getBoolean("host"));
+  //   return player;
+  // }
 }

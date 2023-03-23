@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vttp.miniproject2.pptroulette.models.Game;
 import vttp.miniproject2.pptroulette.models.Lobby;
+import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.repositories.GameRepository;
 import vttp.miniproject2.pptroulette.services.GameService;
 
@@ -33,16 +34,11 @@ public class GameRESTController {
   private GameRepository gameRepo;
 
   @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> createLobby(@RequestBody String body) {
-    // get host name
-    JsonReader reader = Json.createReader(new StringReader(body));
-    JsonObject json = reader.readObject();
-    String hostName = json.getString("hostName");
-
-    System.out.println(">>> Creating new lobby for host: " + hostName);
+  public ResponseEntity<String> createLobby(@RequestBody Player host) {
+    System.out.println(">>> Creating new lobby for host: " + host.getName());
 
     // create new room
-    String gameId = gameService.createGame(hostName);
+    String gameId = gameService.createLobby(host);
 
     JsonObject resp = Json.createObjectBuilder().add("gameId", gameId).build();
 

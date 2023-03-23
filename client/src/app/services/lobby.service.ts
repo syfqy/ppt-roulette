@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
+import { Player } from '../models/player.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,11 +13,8 @@ export class LobbyService {
    */
   constructor(private httpClient: HttpClient) {}
 
-  createLobby(hostName: string): Promise<any> {
-    const body = {
-      hostName: hostName,
-    };
-    return lastValueFrom(this.httpClient.post('/api/game/create', body));
+  createLobby(host: Player): Promise<any> {
+    return lastValueFrom(this.httpClient.post('/api/game/create', host));
   }
 
   joinLobby(gameId: string): Promise<any> {

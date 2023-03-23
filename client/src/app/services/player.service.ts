@@ -17,6 +17,10 @@ export class PlayerService {
     return this.player;
   }
 
+  setPlayer(player: Player) {
+    this.player = player;
+  }
+
   setPlayerName(name: string) {
     this.player.name = name;
   }

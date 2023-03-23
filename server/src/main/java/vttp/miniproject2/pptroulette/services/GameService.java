@@ -1,5 +1,6 @@
 package vttp.miniproject2.pptroulette.services;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class GameService {
   @Autowired
   private GameRepository gameRepo;
 
-  public String createGame(String hostName) {
+  public String createLobby(Player host) {
     String gameId = UUID.randomUUID().toString().substring(0, 4);
 
     while (!gameCache.createGame(gameId)) {
@@ -29,12 +30,20 @@ public class GameService {
       gameId = UUID.randomUUID().toString().substring(0, 4);
     }
 
+    Lobby lobby = new Lobby();
+    lobby.setGameId(gameId);
+    lobby.setHostName(host.getName());
+
     return gameId;
   }
 
   public List<Player> addPlayer(Player player, String gameId) {
     return gameCache.addPlayer(player, gameId);
   }
+
+  // public List<Player> removePlayer(Player player, String gameId) {
+  //   return gameCache.removePlayer(player, gameId);
+  // }
 
   public boolean isGameOngoing(String gameId) {
     return gameCache.isGameOngoing(gameId);
