@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vttp.miniproject2.pptroulette.models.Deck;
+import vttp.miniproject2.pptroulette.models.DeckMaterials;
 import vttp.miniproject2.pptroulette.models.Game;
 import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
@@ -39,14 +39,14 @@ public class GameService {
     prompts.forEach(p -> System.out.println(p));
     List<Image> images = deckRepo.getRandomImages(9);
     images.forEach(p -> System.out.println(p));
-    List<List<Image>> imageLists = Lists.partition(images, 10);
+    List<List<Image>> imageLists = Lists.partition(images, 3);
 
-    Deck deck = new Deck();
-    deck.setTopic(topic);
-    deck.setPrompts(prompts);
-    deck.setImageLists(imageLists);
+    DeckMaterials deckMaterials = new DeckMaterials();
+    deckMaterials.setTopic(topic);
+    deckMaterials.setPrompts(prompts);
+    deckMaterials.setImageLists(imageLists);
 
-    game.setDeck(deck);
+    game.setDeckMaterials(deckMaterials);
 
     return Optional.of(game);
   }

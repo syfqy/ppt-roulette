@@ -83,6 +83,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     // notify lobby of new player joining
     this.notifyLobby(true);
 
+    // TODO: reorder fetch before notifying start
     // subscribe to lobby's start game event
     this.startTopicSub$ = this.rxStompService
       .watch(this.startTopic)

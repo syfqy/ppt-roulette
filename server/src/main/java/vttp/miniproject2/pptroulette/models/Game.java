@@ -10,7 +10,7 @@ public class Game {
   private Player speaker;
   private Player assistant;
   private List<Player> judges;
-  private Deck deck;
+  private DeckMaterials deckMaterials;
   private Integer timePerSlide = 3;
 
   public Game(Lobby lobby) {

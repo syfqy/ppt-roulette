@@ -44,6 +44,7 @@ public class GameRESTController {
     return ResponseEntity.status(HttpStatus.CREATED).body(resp.toString());
   }
 
+  // FIXME: Change to POST mapping, require player in req body
   @GetMapping(path = "/join/{gameId}")
   public ResponseEntity<String> joinLobby(@PathVariable String gameId) {
     // validate lobby

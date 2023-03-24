@@ -78,6 +78,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
       this.gameId = params['gameId'];
     });
 
+    // TODO: move method to lobby component, reorder fetch before navigate to speaker view
     // fetch game data from server
     this.gameService
       .startGame(this.gameId)

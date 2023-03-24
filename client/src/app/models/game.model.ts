@@ -1,4 +1,4 @@
-import { Deck } from './deck.model';
+import { DeckMaterials } from './deck-materials.model';
 import { Player } from './player.model';
 
 export interface Game {
@@ -6,6 +6,6 @@ export interface Game {
   speaker: Player;
   assistant: Player;
   judges: Player[];
-  deck: Deck;
+  deckMaterials: DeckMaterials;
   timePerSlide: number;
 }
