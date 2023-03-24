@@ -82,14 +82,14 @@ export class LobbyComponent implements OnInit, OnDestroy {
     // notify lobby of new player joining
     this.notifyLobby(true);
 
-    // TODO: start game
-    // TODO: navigate to game
     // subscribe to lobby's start game event
     this.startTopicSub$ = this.rxStompService
       .watch(this.startTopic)
       .subscribe((message: Message) => {
-        // if game has started, go to game view
+        // check if game started by host
         const isGameStarted: boolean = JSON.parse(message.body);
+
+        // build and navigate to route based on player role
         if (isGameStarted) {
           const baseRoute = ['/game', this.gameId];
           const gameRoute = this.getGameRoute(
@@ -134,6 +134,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.notifyLobby(false);
 
     this.routeSub$.unsubscribe();
+    this.playerSub$.unsubscribe();
     this.lobbyTopicSub$.unsubscribe();
     this.startTopicSub$.unsubscribe();
   }

@@ -19,7 +19,7 @@ import { Player } from '../models/player.model';
   styleUrls: ['./game-speaker-view.component.css'],
 })
 export class GameSpeakerViewComponent implements OnInit, OnDestroy {
-  totalTime: number = 3;
+  timePerSlide: number = 3;
   timeElapsed: number = 0;
   currentGame!: Game;
   prevState!: any;
@@ -136,10 +136,10 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     // start timer
     let timer = setInterval(() => {
       // if not at last slide, fire next slide event and reset timer
-      if (this.timeElapsed >= this.totalTime && this.slideIdx < 5) {
+      if (this.timeElapsed >= this.timePerSlide && this.slideIdx < 5) {
         this.nextSlideEvent.next();
 
-        this.totalTime = 10;
+        this.timePerSlide = 10;
         this.timeElapsed = 0;
         this.reactions = [];
         this.sendNextSlide(); // notify other players

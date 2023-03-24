@@ -8,13 +8,13 @@ import org.springframework.stereotype.Controller;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.LobbyUpdate;
 import vttp.miniproject2.pptroulette.models.Player;
-import vttp.miniproject2.pptroulette.services.GameService;
+import vttp.miniproject2.pptroulette.services.LobbyService;
 
 @Controller
 public class GameController {
 
   @Autowired
-  GameService gameService;
+  LobbyService lobbyService;
 
   @MessageMapping("/{gameId}")
   @SendTo("/topic/lobby/{gameId}")
@@ -25,6 +25,10 @@ public class GameController {
     Player player = lobbyUpdate.getPlayer();
     String lobbyAction = lobbyUpdate.isJoining() ? "joining" : "leaving";
 
+    Lobby lobby = lobbyUpdate.isJoining()
+      ? lobbyService.addPlayer(player, gameId)
+      : lobbyService.removePlayer(player, gameId);
+
     System.out.println(
       ">>> Player: %s %s game: %s".formatted(
           player.getName(),
@@ -32,10 +36,6 @@ public class GameController {
           gameId
         )
     );
-
-    Lobby lobby = lobbyUpdate.isJoining()
-      ? gameService.addPlayer(player, gameId)
-      : gameService.removePlayer(player, gameId);
 
     return lobby;
   }

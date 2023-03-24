@@ -20,10 +20,14 @@ import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.repositories.GameRepository;
 import vttp.miniproject2.pptroulette.services.GameService;
+import vttp.miniproject2.pptroulette.services.LobbyService;
 
 @RestController
 @RequestMapping(path = "/api/game", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GameRESTController {
+
+  @Autowired
+  private LobbyService lobbyService;
 
   @Autowired
   private GameService gameService;
@@ -36,7 +40,7 @@ public class GameRESTController {
     System.out.println(">>> Creating new lobby for host: " + host.getName());
 
     // create new lobby
-    String gameId = gameService.createLobby(host);
+    String gameId = lobbyService.createLobby(host);
 
     JsonObject resp = Json.createObjectBuilder().add("gameId", gameId).build();
 
@@ -50,7 +54,7 @@ public class GameRESTController {
     // validate lobby
 
     // get gameId
-    if (!gameService.isGameOngoing(gameId)) {
+    if (!lobbyService.isLobbyOpen(gameId)) {
       System.out.println(">>> gameId: %s not found".formatted(gameId));
       JsonObject resp = Json
         .createObjectBuilder()
@@ -69,7 +73,7 @@ public class GameRESTController {
     @RequestBody Lobby lobby
   ) {
     // start game
-    Game game = gameService.startGame(lobby);
+    Game game = gameService.createGame(lobby);
     System.out.println(">>> Starting game");
 
     ObjectMapper mapper = new ObjectMapper();

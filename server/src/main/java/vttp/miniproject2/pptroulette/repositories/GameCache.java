@@ -10,7 +10,7 @@ import vttp.miniproject2.pptroulette.models.Lobby;
 @Repository
 public class GameCache {
 
-  //TODO: Set TTL on lobbies and remove completed games
+  //TODO: Set TTL on lobbies
 
   @Autowired
   @Qualifier("GAME_CACHE")
@@ -26,21 +26,18 @@ public class GameCache {
 
   public void removeLobby(String gameId) {
     redisTemplate.opsForValue().getAndDelete(gameId);
+    redisTemplate.opsForSet().remove("openLobbies", gameId);
   }
 
   public void upsertLobby(Lobby lobby) {
     redisTemplate.opsForValue().set(lobby.getGameId(), gson.toJson(lobby));
   }
 
-  public boolean createGame(String gameId) {
-    return redisTemplate.opsForSet().add("ongoingGames", gameId) > 0;
+  public boolean registerLobby(String gameId) {
+    return redisTemplate.opsForSet().add("openLobbies", gameId) > 0;
   }
 
-  public boolean removeGame(String gameId) {
-    return redisTemplate.opsForSet().remove("ongoingGames", gameId) > 0;
-  }
-
-  public boolean isGameOngoing(String gameId) {
-    return redisTemplate.opsForSet().isMember("ongoingGames", gameId);
+  public boolean isLobbyOpen(String gameId) {
+    return redisTemplate.opsForSet().isMember("openLobbies", gameId);
   }
 }
