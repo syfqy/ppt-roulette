@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import java.io.StringReader;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,18 +35,20 @@ public class GameRESTController {
   public ResponseEntity<String> createLobby(@RequestBody Player host) {
     System.out.println(">>> Creating new lobby for host: " + host.getName());
 
-    // create new room
+    // create new lobby
     String gameId = gameService.createLobby(host);
 
     JsonObject resp = Json.createObjectBuilder().add("gameId", gameId).build();
 
     System.out.println(">>> Created new lobby: " + gameId);
 
-    return ResponseEntity.ok(resp.toString());
+    return ResponseEntity.status(HttpStatus.CREATED).body(resp.toString());
   }
 
   @GetMapping(path = "/join/{gameId}")
   public ResponseEntity<String> joinLobby(@PathVariable String gameId) {
+    // validate lobby
+
     // get gameId
     if (!gameService.isGameOngoing(gameId)) {
       System.out.println(">>> gameId: %s not found".formatted(gameId));

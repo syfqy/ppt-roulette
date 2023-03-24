@@ -1,11 +1,6 @@
 package vttp.miniproject2.pptroulette.repositories;
 
 import com.google.gson.Gson;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import java.io.StringReader;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,6 +9,8 @@ import vttp.miniproject2.pptroulette.models.Lobby;
 
 @Repository
 public class GameCache {
+
+  //TODO: Set TTL on lobbies and remove completed games
 
   @Autowired
   @Qualifier("GAME_CACHE")

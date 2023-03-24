@@ -14,8 +14,8 @@
 </div>
 
 <button
-  *ngIf="currentPlayer.host"
-  [disabled]="!isGameReadyToStart()"
+  *ngIf="currentPlayer.host && !!lobby"
+  [disabled]="!lobby.canStartGame"
   mat-raised-button
   color="primary"
   (click)="startGame()"

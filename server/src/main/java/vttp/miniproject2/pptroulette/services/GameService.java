@@ -1,7 +1,8 @@
 package vttp.miniproject2.pptroulette.services;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class GameService {
       assignDefaultRoles(lobby);
     }
 
-    // TODO: check game ready to start
+    lobby.setCanStartGame(isLobbyReadyToStart(lobby));
 
     // save lobby
     gameCache.upsertLobby(lobby);
@@ -87,7 +88,7 @@ public class GameService {
   public Lobby removePlayer(Player player, String gameId) {
     Lobby lobby = gameCache.getLobby(gameId);
 
-    // if no players, remove lobby
+    // if no players left, delete lobby
     if (lobby.getPlayers().size() <= 1) {
       gameCache.removeLobby(gameId);
       gameCache.removeGame(gameId);
@@ -96,10 +97,12 @@ public class GameService {
 
     lobby.removePlayer(player.getName());
 
-    // TODO: clear roles
+    // clear roles if lobby has less than min players
+    if (lobby.getPlayers().size() < Lobby.MIN_NUM_PLAYERS) lobby
+      .getPlayers()
+      .forEach(p -> p.setRole(null));
 
-    // TODO: check game to ready to start
-
+    lobby.setCanStartGame(isLobbyReadyToStart(lobby));
     gameCache.upsertLobby(lobby);
 
     return gameCache.getLobby(gameId);
@@ -115,6 +118,28 @@ public class GameService {
     for (int i = 2; i < lobby.getPlayers().size(); i++) {
       lobby.assignRole(i, "Judge");
     }
+  }
+
+  private boolean isLobbyReadyToStart(Lobby lobby) {
+    // lobby size check
+    Integer numPlayers = lobby.getPlayers().size();
+    if (
+      numPlayers < Lobby.MIN_NUM_PLAYERS || numPlayers > Lobby.MAX_NUM_PLAYERS
+    ) return false;
+
+    // role check
+    Map<String, Integer> roleCountsMap = new HashMap<String, Integer>();
+    lobby
+      .getPlayers()
+      .forEach(player -> {
+        roleCountsMap.merge(player.getRole().toLowerCase(), 1, Integer::sum);
+      });
+
+    if (roleCountsMap.get("speaker") != 1) return false;
+    if (roleCountsMap.get("assistant") != 1) return false;
+    if (roleCountsMap.get("judge") != numPlayers - 2) return false;
+
+    return true;
   }
 
   public Game startGame(Lobby lobby) {

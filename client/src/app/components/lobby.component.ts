@@ -17,12 +17,16 @@ export class LobbyComponent implements OnInit, OnDestroy {
   currentPlayer!: Player;
   hostPlayer!: Player;
   lobby!: Lobby;
+  gameId!: string;
 
   lobbyTopic: string = '/topic/lobby';
   lobbyDestination: string = '/lobby';
+  startTopic: string = '/topic/start';
+  startDestination: string = '/lobby/start';
 
-  gameId!: string;
+  playerSub$!: Subscription;
   lobbyTopicSub$!: Subscription;
+  startTopicSub$!: Subscription;
   routeSub$!: Subscription;
 
   constructor(
@@ -33,9 +37,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // get player
+    // get current player and subscribe to changes in current player
     this.currentPlayer = this.playerService.getPlayer();
-    console.table(this.currentPlayer);
+    this.playerSub$ = this.playerService.onPlayerChange.subscribe((player) => {
+      console.table(this.currentPlayer);
+      this.currentPlayer = player;
+    });
 
     // set game id, topics and destinations
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
@@ -44,6 +51,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.lobbyTopic = this.appendGameId(this.lobbyTopic, this.gameId);
       this.lobbyDestination = this.appendGameId(
         this.lobbyDestination,
+        this.gameId
+      );
+
+      this.startTopic = this.appendGameId(this.startTopic, this.gameId);
+      this.startDestination = this.appendGameId(
+        this.startDestination,
         this.gameId
       );
     });
@@ -59,40 +72,34 @@ export class LobbyComponent implements OnInit, OnDestroy {
         const cPlayer = this.lobby.players.find(
           (p) => p.name === this.currentPlayer.name
         );
-        if (!!cPlayer) this.currentPlayer = cPlayer;
+        if (!!cPlayer) this.playerService.setPlayer(cPlayer);
 
         // update host
         const host = this.lobby.players.find((p) => p.host);
         if (!!host) this.hostPlayer = host;
       });
 
-    // send message to notify lobby of new join
+    // notify lobby of new player joining
     this.notifyLobby(true);
 
-    // // subscribe to lobby's start game event
-    // this.lobbyStatusTopicSub$ = this.rxStompService
-    //   .watch(this.lobbyStatusTopic)
-    //   .subscribe((message: Message) => {
-    //     // if game has started, go to game view
-    //     const isGameStarted: boolean = JSON.parse(message.body);
-    //     if (isGameStarted) {
-    //       console.log('>>> host has started the game');
+    // TODO: start game
+    // TODO: navigate to game
+    // subscribe to lobby's start game event
+    this.startTopicSub$ = this.rxStompService
+      .watch(this.startTopic)
+      .subscribe((message: Message) => {
+        // if game has started, go to game view
+        const isGameStarted: boolean = JSON.parse(message.body);
+        if (isGameStarted) {
+          const baseRoute = ['/game', this.gameId];
+          const gameRoute = this.getGameRoute(
+            baseRoute,
+            this.currentPlayer.role
+          );
 
-    //       const baseRoute = ['/game', this.gameId];
-    //       const gameRoute = this.getGameRoute(
-    //         baseRoute,
-    //         this.currentPlayer.role
-    //       );
-
-    //       this.router.navigate(gameRoute, {
-    //         state: {
-    //           gameId: this.gameId,
-    //           currentPlayer: this.currentPlayer,
-    //           players: this.players,
-    //         },
-    //       });
-    //     }
-    //   });
+          this.router.navigate(gameRoute);
+        }
+      });
   }
 
   notifyLobby(isJoining: boolean): void {
@@ -112,52 +119,22 @@ export class LobbyComponent implements OnInit, OnDestroy {
     return [...gameRoute, playerRole.toLowerCase()];
   }
 
-  // TODO: move check to server side
-  isGameReadyToStart(): boolean {
-    // const totalPlayers = this.players.length;
-    // const playerRoleCountsMap = new Map<string, number>();
-
-    // this.players.forEach((p) => {
-    //   playerRoleCountsMap.set(
-    //     p.role.toLowerCase(),
-    //     !!playerRoleCountsMap.get(p.role.toLowerCase())
-    //       ? playerRoleCountsMap.get(p.role.toLowerCase())! + 1
-    //       : 1
-    //   );
-    // });
-
-    // console.log('>>> checking if game is ready to start');
-    // console.log(playerRoleCountsMap);
-
-    // // number of players check
-    // if (totalPlayers < 3 || totalPlayers > 5) return false;
-
-    // // role checks
-    // // TODO: ignore case
-    // if (playerRoleCountsMap.get('speaker') !== 1) return false;
-
-    // if (playerRoleCountsMap.get('assistant') !== 1) return false;
-
-    // if (playerRoleCountsMap.get('judge') !== totalPlayers - 2) return false;
-
-    return true;
-  }
-
   appendGameId(route: string, gameId: string) {
     return `${route}/${gameId}`;
   }
 
   startGame() {
-    // this.rxStompService.publish({
-    //   destination: this.startDestination,
-    // });
+    this.rxStompService.publish({
+      destination: this.startDestination,
+    });
   }
 
   ngOnDestroy(): void {
-    // leave lobby
+    // notifty lobby of player leaving
     this.notifyLobby(false);
 
     this.routeSub$.unsubscribe();
     this.lobbyTopicSub$.unsubscribe();
+    this.startTopicSub$.unsubscribe();
   }
 }

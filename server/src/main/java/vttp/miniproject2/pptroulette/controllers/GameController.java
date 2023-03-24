@@ -1,11 +1,5 @@
 package vttp.miniproject2.pptroulette.controllers;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,7 +18,7 @@ public class GameController {
 
   @MessageMapping("/{gameId}")
   @SendTo("/topic/lobby/{gameId}")
-  public Lobby updateLobby(
+  public Lobby sendLobbyUpdate(
     @DestinationVariable String gameId,
     LobbyUpdate lobbyUpdate
   ) {

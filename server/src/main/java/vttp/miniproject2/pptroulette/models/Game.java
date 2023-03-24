@@ -1,8 +1,5 @@
 package vttp.miniproject2.pptroulette.models;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
 import java.util.List;
 import lombok.Data;
 
