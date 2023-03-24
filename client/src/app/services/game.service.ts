@@ -10,19 +10,9 @@ import { Player } from '../models/player.model';
 export class GameService {
   constructor(private httpClient: HttpClient) {}
 
-  startGame(
-    hostName: string,
-    players: Player[],
-    gameId: string
-  ): Promise<Game> {
-    const lobby = {
-      hostName: hostName,
-      players: players,
-      gameId: gameId,
-    };
-
+  startGame(gameId: string): Promise<Game> {
     return lastValueFrom(
-      this.httpClient.post<Game>(`/api/game/start/${gameId}`, lobby)
+      this.httpClient.get<Game>(`/api/game/start/${gameId}`)
     );
   }
 

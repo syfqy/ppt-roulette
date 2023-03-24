@@ -26,7 +26,7 @@ public class LobbyService {
   public String createLobby(Player host) {
     String gameId = UUID.randomUUID().toString().substring(0, 4);
 
-    while (!gameCache.registerLobby(gameId)) {
+    while (!gameCache.openLobby(gameId)) {
       System.out.println(
         ">>> gameId %s already exists, generating new gameId".formatted(gameId)
       );
@@ -72,7 +72,12 @@ public class LobbyService {
       assignDefaultRoles(lobby);
     }
 
+    // update ready and open status
     lobby.setCanStartGame(isLobbyReadyToStart(lobby));
+    if (lobby.getPlayers().size() == Lobby.MAX_NUM_PLAYERS) {
+      System.out.println(">>> Lobby: %s full, closing lobby".formatted(gameId));
+      gameCache.closeLobby(gameId);
+    }
 
     // save lobby
     gameCache.upsertLobby(lobby);
@@ -83,8 +88,11 @@ public class LobbyService {
   public Lobby removePlayer(Player player, String gameId) {
     Lobby lobby = gameCache.getLobby(gameId);
 
-    // if no players left, delete lobby
+    if (!gameCache.isLobbyOpen(gameId)) return lobby;
+
+    // if no players left, close and delete lobby
     if (lobby.getPlayers().size() <= 1) {
+      gameCache.closeLobby(gameId);
       gameCache.removeLobby(gameId);
       return lobby;
     }
@@ -96,7 +104,12 @@ public class LobbyService {
       .getPlayers()
       .forEach(p -> p.setRole(null));
 
+    // update ready and open status
     lobby.setCanStartGame(isLobbyReadyToStart(lobby));
+    if (lobby.getPlayers().size() < Lobby.MAX_NUM_PLAYERS) gameCache.openLobby(
+      gameId
+    );
+
     gameCache.upsertLobby(lobby);
 
     return gameCache.getLobby(gameId);

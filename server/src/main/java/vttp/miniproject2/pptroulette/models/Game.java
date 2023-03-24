@@ -10,7 +10,13 @@ public class Game {
   private Player speaker;
   private Player assistant;
   private List<Player> judges;
-  private String topic;
-  private List<String> prompts;
-  private List<String> imageUrls;
+  private Deck deck;
+  private Integer timePerSlide = 3;
+
+  public Game(Lobby lobby) {
+    this.gameId = lobby.getGameId();
+    this.speaker = lobby.getPlayerByRole("speaker").get(0);
+    this.assistant = lobby.getPlayerByRole("assistant").get(0);
+    this.judges = lobby.getPlayerByRole("judge");
+  }
 }

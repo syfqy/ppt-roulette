@@ -18,6 +18,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   hostPlayer!: Player;
   lobby!: Lobby;
   gameId!: string;
+  gameStarted = false;
 
   lobbyTopic: string = '/topic/lobby';
   lobbyDestination: string = '/lobby';
@@ -87,10 +88,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
       .watch(this.startTopic)
       .subscribe((message: Message) => {
         // check if game started by host
-        const isGameStarted: boolean = JSON.parse(message.body);
+        this.gameStarted = JSON.parse(message.body);
 
         // build and navigate to route based on player role
-        if (isGameStarted) {
+        if (this.gameStarted) {
           const baseRoute = ['/game', this.gameId];
           const gameRoute = this.getGameRoute(
             baseRoute,
@@ -131,7 +132,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // notifty lobby of player leaving
-    this.notifyLobby(false);
+    if (!this.gameStarted) this.notifyLobby(false);
 
     this.routeSub$.unsubscribe();
     this.playerSub$.unsubscribe();

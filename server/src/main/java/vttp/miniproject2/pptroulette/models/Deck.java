@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Deck {
 
-  private String topic;
-  private List<String> prompts;
-  private List<Image> images;
+  private Topic topic;
+  private List<Prompt> prompts;
+  private List<List<Image>> imageLists;
 }

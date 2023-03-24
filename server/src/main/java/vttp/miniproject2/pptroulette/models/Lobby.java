@@ -47,4 +47,11 @@ public class Lobby {
         .filter(p -> !p.getName().equals(playerName))
         .toList();
   }
+
+  public List<Player> getPlayerByRole(String role) {
+    return players
+      .stream()
+      .filter(p -> p.getRole().toLowerCase().equals(role.toLowerCase()))
+      .toList();
+  }
 }

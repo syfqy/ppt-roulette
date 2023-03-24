@@ -1,68 +1,53 @@
 package vttp.miniproject2.pptroulette.services;
 
-import java.util.HashMap;
+import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vttp.miniproject2.pptroulette.models.Deck;
 import vttp.miniproject2.pptroulette.models.Game;
+import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
-import vttp.miniproject2.pptroulette.models.Player;
-import vttp.miniproject2.pptroulette.repositories.GameCache;
-import vttp.miniproject2.pptroulette.repositories.GameRepository;
+import vttp.miniproject2.pptroulette.models.Prompt;
+import vttp.miniproject2.pptroulette.models.Topic;
+import vttp.miniproject2.pptroulette.repositories.DeckRepository;
 
 @Service
 public class GameService {
 
   @Autowired
-  private GameCache gameCache;
+  private LobbyService lobbyService;
 
   @Autowired
-  private GameRepository gameRepo;
+  private DeckRepository deckRepo;
 
-  public Game createGame(Lobby lobby) {
-    // TODO: validate lobby
+  public Optional<Game> createGame(String gameId) {
+    Lobby lobby = lobbyService.getLobby(gameId);
+    if (!lobby.isCanStartGame()) {
+      return Optional.empty();
+    }
 
-    // create new game
-    System.out.println(">>> Intializing game");
-    Game game = new Game();
-    List<Player> players = lobby.getPlayers();
+    // create new game from lobby
+    System.out.println(">>> Creating new game for lobby: %s".formatted(gameId));
+    Game game = new Game(lobby);
 
-    // set roles
-    // SMELL: duplication
-    Player speaker = players
-      .stream()
-      .filter(p -> p.getRole().toLowerCase().equals("speaker"))
-      .findFirst()
-      .get();
+    // create deck
+    Topic topic = deckRepo.getRandomTopic();
+    System.out.println(">>> Topic: " + topic);
+    List<Prompt> prompts = deckRepo.getRandomPrompts(2);
+    prompts.forEach(p -> System.out.println(p));
+    List<Image> images = deckRepo.getRandomImages(9);
+    images.forEach(p -> System.out.println(p));
+    List<List<Image>> imageLists = Lists.partition(images, 10);
 
-    Player assistant = players
-      .stream()
-      .filter(p -> p.getRole().toLowerCase().equals("assistant"))
-      .findFirst()
-      .get();
+    Deck deck = new Deck();
+    deck.setTopic(topic);
+    deck.setPrompts(prompts);
+    deck.setImageLists(imageLists);
 
-    List<Player> judges = players
-      .stream()
-      .filter(p -> p.getRole().toLowerCase().equals("judge"))
-      .toList();
+    game.setDeck(deck);
 
-    String topic = gameRepo.getRandomTopic();
-    List<String> prompts = gameRepo.getRandomPrompts(2);
-    List<String> images = gameRepo.getRandomImages(3);
-
-    game.setGameId(lobby.getGameId());
-    game.setSpeaker(speaker);
-    game.setAssistant(assistant);
-    game.setJudges(judges);
-    game.setTopic(topic);
-    game.setPrompts(prompts);
-    game.setImageUrls(images);
-
-    // TODO: cache game
-    // gameCache.saveGameState(game);
-
-    return game;
+    return Optional.of(game);
   }
 }

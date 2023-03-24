@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vttp.miniproject2.pptroulette.models.Game;
-import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.Player;
-import vttp.miniproject2.pptroulette.repositories.GameRepository;
 import vttp.miniproject2.pptroulette.services.GameService;
 import vttp.miniproject2.pptroulette.services.LobbyService;
 
@@ -31,9 +29,6 @@ public class GameRESTController {
 
   @Autowired
   private GameService gameService;
-
-  @Autowired
-  private GameRepository gameRepo;
 
   @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> createLobby(@RequestBody Player host) {
@@ -67,37 +62,22 @@ public class GameRESTController {
     return ResponseEntity.ok(resp.toString());
   }
 
-  @PostMapping(path = "/start/{gameId}")
-  public ResponseEntity<String> startGame(
-    @PathVariable String gameId,
-    @RequestBody Lobby lobby
-  ) {
+  @GetMapping(path = "/start/{gameId}")
+  public ResponseEntity<String> startGame(@PathVariable String gameId) {
     // start game
-    Game game = gameService.createGame(lobby);
-    System.out.println(">>> Starting game");
+    Optional<Game> opt = gameService.createGame(gameId);
+    if (opt.isEmpty()) return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body("Lobby not ready to start game");
 
+    System.out.println(">>> Starting game");
     ObjectMapper mapper = new ObjectMapper();
     String resp;
     try {
-      resp = mapper.writeValueAsString(game);
+      resp = mapper.writeValueAsString(opt.get());
       return ResponseEntity.ok(resp);
     } catch (JsonProcessingException e) {
       System.out.println(">>> Cannnot map game to JSON");
-      e.printStackTrace();
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("error");
-    }
-  }
-
-  @GetMapping(path = "/images")
-  public ResponseEntity<String> getImages() {
-    // TODO: get images from service
-    List<String> images = gameRepo.getRandomImages(9);
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      return ResponseEntity.ok(mapper.writeValueAsString(images));
-    } catch (JsonProcessingException e) {
       e.printStackTrace();
       return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)

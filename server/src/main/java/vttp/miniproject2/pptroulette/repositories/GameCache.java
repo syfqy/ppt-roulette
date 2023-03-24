@@ -26,15 +26,18 @@ public class GameCache {
 
   public void removeLobby(String gameId) {
     redisTemplate.opsForValue().getAndDelete(gameId);
-    redisTemplate.opsForSet().remove("openLobbies", gameId);
   }
 
   public void upsertLobby(Lobby lobby) {
     redisTemplate.opsForValue().set(lobby.getGameId(), gson.toJson(lobby));
   }
 
-  public boolean registerLobby(String gameId) {
+  public boolean openLobby(String gameId) {
     return redisTemplate.opsForSet().add("openLobbies", gameId) > 0;
+  }
+
+  public boolean closeLobby(String gameId) {
+    return redisTemplate.opsForSet().remove("openLobbies", gameId) > 0;
   }
 
   public boolean isLobbyOpen(String gameId) {
