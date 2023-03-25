@@ -1,8 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Message } from '@stomp/stompjs';
 import { Subscription } from 'rxjs';
+import { Deck } from '../models/deck.model';
+import { Image } from '../models/image.model';
 import { Player } from '../models/player.model';
 import { GameService } from '../services/game.service';
+import { PlayerService } from '../services/player.service';
 import { RxStompService } from '../services/rx-stomp.service';
 
 @Component({
@@ -11,78 +15,63 @@ import { RxStompService } from '../services/rx-stomp.service';
   styleUrls: ['./game-assistant-view.component.css'],
 })
 export class GameAssistantViewComponent implements OnInit {
-  prevState!: any;
+  assistant!: Player;
   gameId!: string;
-  currentPlayer!: Player;
-  players!: Player[];
-  canSelectImage: boolean = false;
-  images: string[][] = [];
-  imageIdx: number = 0;
-  showSelection = false;
 
-  nextImageDestination: string = '/game/nextImage';
+  imageOptions!: Image[];
+  imageSelected!: Image;
+  imageConfirmed: boolean = false;
 
-  nextSlideTopic: string = '/topic/slide';
-  nextSlideTopicSub$!: Subscription;
+  imageOptionsTopic: string = '/topic/imageOptions';
+  imageSelectedDestination: string = '/game/imageSelected';
+
+  routeSub$!: Subscription;
+  imageOptionsSub$!: Subscription;
 
   constructor(
-    private rxStompService: RxStompService,
-    private router: Router,
-    private gameService: GameService
-  ) {
-    // get state from lobby
-    const state = this.router.getCurrentNavigation()?.extras.state;
-    console.log('>>> state');
-    console.table(state);
-    this.prevState = state;
-  }
+    private playerService: PlayerService,
+    private activatedRoute: ActivatedRoute,
+    private rxStompService: RxStompService
+  ) {}
 
-  ngOnInit() {
-    if (!!this.prevState) {
-      this.gameId = this.prevState['gameId'];
-      this.currentPlayer = this.prevState['currentPlayer'];
-      this.players = this.prevState['players'];
+  ngOnInit(): void {
+    // get assistant
+    this.assistant = this.playerService.getPlayer();
 
-      // set topics and destinations
-      this.nextImageDestination = `${this.nextImageDestination}/${this.gameId}`;
-      this.nextSlideTopic = `${this.nextSlideTopic}/${this.gameId}`;
-    }
+    // get game id
+    this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
+      this.gameId = params['gameId'];
+      this.imageOptionsTopic = `${this.imageOptionsTopic}/${this.gameId}`;
+      this.imageSelectedDestination = `${this.imageSelectedDestination}/${this.gameId}`;
+    });
 
-    // get images
-    // this.gameService
-    //   .getImages()
-    //   .then((res) => {
-    //     console.log('>>> Intializing game');
-    //     console.log(res);
-    //     const imageFlatArr = res;
-    //     const imageNestedArr = [];
-    //     while (imageFlatArr.length)
-    //       imageNestedArr.push(imageFlatArr.splice(0, 3));
-    //     console.log('>>> images :' + imageNestedArr);
-    //     this.images = imageNestedArr;
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
-
-    // subscribe to next slide event by host
-    this.nextSlideTopicSub$ = this.rxStompService
-      .watch(this.nextSlideTopic)
-      .subscribe((slideIdx: any) => {
-        // change to next selection
-        console.log('>>> assistant slideIdx: ' + slideIdx);
-        this.showSelection = slideIdx % 2 === 0;
-        if (this.imageIdx < 2) this.imageIdx++;
+    // subscribe to image options from speaker
+    this.imageOptionsSub$ = this.rxStompService
+      .watch(this.imageOptionsTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> received image options from speaker');
+        console.log(JSON.parse(message.body));
+        this.imageOptions = JSON.parse(message.body) as Image[];
+        this.imageConfirmed = false;
+        this.imageSelected = {} as Image;
       });
   }
 
-  selectNextImage(imageUrl: string): void {
-    // FIXME: Disable selection on image slide
-    console.log('>>> assistant selected image: ' + imageUrl);
+  //FIXME: prevent assistant from selecting slide too late
+  selectImage(image: Image) {
+    this.imageSelected = image;
+  }
 
+  notifyImageSelected() {
     this.rxStompService.publish({
-      destination: this.nextImageDestination,
-      body: imageUrl,
+      destination: this.imageSelectedDestination,
+      body: JSON.stringify(this.imageSelected),
     });
+    this.imageConfirmed = true;
+  }
+
+  ngOnDestroy() {
+    this.routeSub$.unsubscribe();
+    this.imageOptionsSub$.unsubscribe();
   }
 }

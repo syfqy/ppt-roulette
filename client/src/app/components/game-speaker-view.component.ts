@@ -15,6 +15,8 @@ import { GameStateService } from '../services/game-state.service';
 import { Deck } from '../models/deck.model';
 import { Slide } from '../models/slide.model';
 import { DeckMaterials } from '../models/deck-materials.model';
+import { Image } from '../models/image.model';
+import { Message } from '@stomp/stompjs';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -32,19 +34,19 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   currSlide!: Slide;
   numSlides!: number;
 
-  nextSlideSub$!: Subscription;
   nextSlideEvent = new Subject<void>();
   currTemplate!: TemplateRef<any>;
 
   reactions: string[] = [];
 
   reactionsTopic: string = '/topic/reactions';
-  imageTopic: string = '/topic/image';
+  imageSelectedTopic: string = '/topic/imageSelected';
 
-  reactionDestination: string = '/lobby/start';
+  imageOptionsDestination: string = '/game/imageOptions';
 
+  nextSlideSub$!: Subscription;
   reactionsTopicSub$!: Subscription;
-  imageTopicSub$!: Subscription;
+  imageSelectedTopicSub$!: Subscription;
   routeSub$!: Subscription;
 
   @ViewChild('topicTemplate')
@@ -70,6 +72,8 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     // get game
     this.game = this.gameStateService.getGame();
     this.timeForCurrSlide = this.game.timePerSlide;
+    this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
+    this.imageOptionsDestination = `${this.imageOptionsDestination}/${this.game.gameId}`;
 
     // create deck from deck materials
     this.deck = Deck.createFromDeckMaterials(
@@ -84,13 +88,37 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
       this.currSlideIdx++;
       this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
       this.currTemplate = this.changeTemplate(this.currSlide);
+
+      // notify assistant of image options
+      if (this.currSlide.getType().toLowerCase() !== 'image') {
+        const i = Math.floor(this.currSlideIdx / 2);
+        console.log('>>> image options prepared');
+        console.log(this.deck.imageSelectionArrs[i]);
+        this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
+      }
     });
+
+    // subscribe to image selected by assistant
+    this.imageSelectedTopicSub$ = this.rxStompService
+      .watch(this.imageSelectedTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> received selected image from assistant');
+        console.log(JSON.parse(message.body));
+        const images: Image = JSON.parse(message.body) as Image;
+        const imageSelected: Image = Deck.createImage(
+          images.imageId,
+          images.imageUrl
+        );
+        // WARNING: might need to prevent last minute send by assistant
+        this.deck.setSlideByIdx(this.currSlideIdx + 1, imageSelected);
+      });
 
     // start timer
     let timer = setInterval(() => {
       if (this.timeElapsed >= this.timeForCurrSlide) {
         if (this.currSlideIdx < this.numSlides - 1) {
           // if not at last slide when time up, trigger next slide and reset
+          console.log('>>> time up, next slide event triggered');
           this.nextSlideEvent.next();
 
           // TODO: create clean up function to call when next slide
@@ -109,7 +137,6 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   private changeTemplate(slide: Slide): TemplateRef<any> {
     // project slide template into slide component
     console.log('>>> changing template');
-    console.table(slide);
     switch (slide.getType().toLowerCase()) {
       case 'topic':
         return this.topicTemplate;
@@ -122,18 +149,18 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO: send assistant image options
-  // TODO: set image of next slide based on assistant's selection
-  // sendNextSlide(): void {
-  //   this.rxStompService.publish({
-  //     destination: this.slideDestination,
-  //     body: this.slideIdx.toString(),
-  //   });
-  // }
+  notifyImageOptions(imageOptions: Image[]): void {
+    console.log('>>> sending image options to assistant');
+    this.rxStompService.publish({
+      destination: this.imageOptionsDestination,
+      body: JSON.stringify(imageOptions),
+    });
+  }
 
   ngOnDestroy(): void {
     this.nextSlideSub$.unsubscribe();
-    this.imageTopicSub$.unsubscribe();
+    this.imageSelectedTopicSub$.unsubscribe();
     this.reactionsTopicSub$.unsubscribe();
+    this.routeSub$.unsubscribe();
   }
 }

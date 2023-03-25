@@ -1,15 +1,16 @@
-.image-choices {
+.image-options {
     display: flex;
 }
 
 img {
-    cursor: pointer;
     max-width: 128px;
     max-height: 128px;
 }
 
-img:hover {
+.can-select {
+    cursor: pointer;
+}
 
+.apply-hover:hover {
     border: 10px solid skyblue;
-    
 }

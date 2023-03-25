@@ -48,14 +48,14 @@ export class Deck {
     return new Deck(slides, deckMaterials.imageLists);
   }
 
-  private static createTopic(topicId: string, topicText: string): Topic {
+  static createTopic(topicId: string, topicText: string): Topic {
     return new Topic(topicId, topicText);
   }
 
-  private static createPrompt(promptId: string, promptText: string): Prompt {
+  static createPrompt(promptId: string, promptText: string): Prompt {
     return new Prompt(promptId, promptText);
   }
-  private static createImage(imageId: string, imageUrl: string): Image {
+  static createImage(imageId: string, imageUrl: string): Image {
     return new Image(imageId, imageUrl);
   }
 

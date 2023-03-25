@@ -1,10 +1,12 @@
 package vttp.miniproject2.pptroulette.controllers;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.LobbyUpdate;
 import vttp.miniproject2.pptroulette.models.Player;
@@ -54,22 +56,24 @@ public class GameController {
     return gameService.isGameCreated(gameId);
   }
 
-  @MessageMapping("/slide/{gameId}")
-  @SendTo("/topic/slide/{gameId}")
-  public Integer sendNextSlide(
+  @MessageMapping("/imageOptions/{gameId}")
+  @SendTo("/topic/imageOptions/{gameId}")
+  public List<Image> sendImageOptions(
     @DestinationVariable String gameId,
-    Integer slideIdx
+    List<Image> imageOptions
   ) {
-    return slideIdx;
+    System.out.println("Image options sent to asssistant");
+    return imageOptions;
   }
 
-  @MessageMapping("/nextImage/{gameId}")
-  @SendTo("/topic/image/{gameId}")
-  public String sendNextImage(
+  @MessageMapping("/imageSelected/{gameId}")
+  @SendTo("/topic/imageSelected/{gameId}")
+  public Image sendImageSelected(
     @DestinationVariable String gameId,
-    String imageUrl
+    Image imageSelected
   ) {
-    return imageUrl;
+    System.out.println("Image selected sent to speaker");
+    return imageSelected;
   }
 
   @MessageMapping("/reactions/{gameId}")
