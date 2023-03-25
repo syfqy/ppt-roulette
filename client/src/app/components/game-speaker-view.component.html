@@ -5,7 +5,7 @@
 >
 </mat-progress-spinner>
 <p>Time left: {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}</p>
-<!-- <p>Slide: {{ slideIdx + 1 }} / 6</p> -->
+<p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
 
 <app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
 

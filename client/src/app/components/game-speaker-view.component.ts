@@ -26,9 +26,9 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   game!: Game;
   deck!: Deck;
 
-  timePerSlide!: number;
+  timeForCurrSlide!: number;
   timeElapsed: number = 0;
-  currSlideIdx: number = 0;
+  currSlideIdx: number = -1;
   currSlide!: Slide;
   numSlides!: number;
 
@@ -38,16 +38,13 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
   reactions: string[] = [];
 
-  slideDestination: string = '/game/slide';
-
-  // slideTopic: string = '/topic/slide';
   reactionsTopic: string = '/topic/reactions';
   imageTopic: string = '/topic/image';
 
-  // slideTopicSub$!: Subscription;
+  reactionDestination: string = '/lobby/start';
+
   reactionsTopicSub$!: Subscription;
   imageTopicSub$!: Subscription;
-  // reactionDestination: string = '/lobby/start';
   routeSub$!: Subscription;
 
   @ViewChild('topicTemplate')
@@ -72,15 +69,17 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
     // get game
     this.game = this.gameStateService.getGame();
-    this.timePerSlide = this.game.timePerSlide;
+    this.timeForCurrSlide = this.game.timePerSlide;
 
     // create deck from deck materials
     this.deck = Deck.createFromDeckMaterials(
       this.game.deckMaterials as DeckMaterials
     );
     this.numSlides = this.deck.slides.length;
+    console.log('>>> deck prepared');
+    console.log(this.deck);
 
-    // subscribe to next slide event when timer up, trigger next slide
+    // subscribe to next slide event when timer up, change view to next slide
     this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
       this.currSlideIdx++;
       this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
@@ -89,29 +88,26 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
     // start timer
     let timer = setInterval(() => {
-      // if not at last slide, fire next slide event when time is up
-      if (
-        this.timeElapsed >= this.game.timePerSlide &&
-        this.currSlideIdx < this.numSlides
-      ) {
-        this.nextSlideEvent.next();
+      if (this.timeElapsed >= this.timeForCurrSlide) {
+        if (this.currSlideIdx < this.numSlides - 1) {
+          // if not at last slide when time up, trigger next slide and reset
+          this.nextSlideEvent.next();
 
-        // TODO: create clean up function to call when next slide
-        this.timePerSlide = this.game.timePerSlide;
-        this.timeElapsed = 0;
-        this.reactions = [];
-
-        // this.sendNextSlide(); // notify other players
-      } else if (this.currSlideIdx >= this.numSlides) {
-        // end round
-        clearInterval(timer);
+          // TODO: create clean up function to call when next slide
+          this.timeForCurrSlide = this.game.timePerSlide;
+          this.timeElapsed = 0;
+          this.reactions = [];
+        } else {
+          // TODO: call end round/game method
+          clearInterval(timer);
+        }
       }
       this.timeElapsed += 0.1;
     }, 100);
   }
 
   private changeTemplate(slide: Slide): TemplateRef<any> {
-    // project slide content into slide component
+    // project slide template into slide component
     console.log('>>> changing template');
     console.table(slide);
     switch (slide.getType().toLowerCase()) {
@@ -126,6 +122,8 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: send assistant image options
+  // TODO: set image of next slide based on assistant's selection
   // sendNextSlide(): void {
   //   this.rxStompService.publish({
   //     destination: this.slideDestination,
