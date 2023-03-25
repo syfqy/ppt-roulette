@@ -14,10 +14,10 @@ export class LobbyService {
   constructor(private httpClient: HttpClient) {}
 
   createLobby(host: Player): Promise<any> {
-    return lastValueFrom(this.httpClient.post('/api/game/create', host));
+    return lastValueFrom(this.httpClient.post('/api/lobby/create', host));
   }
 
   joinLobby(gameId: string): Promise<any> {
-    return lastValueFrom(this.httpClient.get(`/api/game/join/${gameId}`));
+    return lastValueFrom(this.httpClient.get(`/api/lobby/join/${gameId}`));
   }
 }

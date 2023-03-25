@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.LobbyUpdate;
 import vttp.miniproject2.pptroulette.models.Player;
+import vttp.miniproject2.pptroulette.services.GameService;
 import vttp.miniproject2.pptroulette.services.LobbyService;
 
 @Controller
@@ -15,6 +16,9 @@ public class GameController {
 
   @Autowired
   LobbyService lobbyService;
+
+  @Autowired
+  GameService gameService;
 
   @MessageMapping("/{gameId}")
   @SendTo("/topic/lobby/{gameId}")
@@ -43,7 +47,11 @@ public class GameController {
   @MessageMapping("/start/{gameId}")
   @SendTo("/topic/start/{gameId}")
   public boolean sendGameStart(@DestinationVariable String gameId) {
-    return true;
+    // check game created
+    if (gameService.isGameCreated(gameId)) System.out.println(
+      ">>> Host has started game: " + gameId
+    );
+    return gameService.isGameCreated(gameId);
   }
 
   @MessageMapping("/slide/{gameId}")

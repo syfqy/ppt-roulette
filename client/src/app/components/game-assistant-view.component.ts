@@ -49,21 +49,21 @@ export class GameAssistantViewComponent implements OnInit {
     }
 
     // get images
-    this.gameService
-      .getImages()
-      .then((res) => {
-        console.log('>>> Intializing game');
-        console.log(res);
-        const imageFlatArr = res;
-        const imageNestedArr = [];
-        while (imageFlatArr.length)
-          imageNestedArr.push(imageFlatArr.splice(0, 3));
-        console.log('>>> images :' + imageNestedArr);
-        this.images = imageNestedArr;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    // this.gameService
+    //   .getImages()
+    //   .then((res) => {
+    //     console.log('>>> Intializing game');
+    //     console.log(res);
+    //     const imageFlatArr = res;
+    //     const imageNestedArr = [];
+    //     while (imageFlatArr.length)
+    //       imageNestedArr.push(imageFlatArr.splice(0, 3));
+    //     console.log('>>> images :' + imageNestedArr);
+    //     this.images = imageNestedArr;
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
 
     // subscribe to next slide event by host
     this.nextSlideTopicSub$ = this.rxStompService

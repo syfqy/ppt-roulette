@@ -19,6 +19,9 @@ public class GameCache {
   @Autowired
   private Gson gson;
 
+  private static final String LOBBY_SET_KEY = "lobbies";
+  private static final String GAME_SET_KEY = "games";
+
   public Lobby getLobby(String gameId) {
     String result = redisTemplate.opsForValue().get(gameId);
     return gson.fromJson(result, Lobby.class);
@@ -33,14 +36,22 @@ public class GameCache {
   }
 
   public boolean openLobby(String gameId) {
-    return redisTemplate.opsForSet().add("openLobbies", gameId) > 0;
+    return redisTemplate.opsForSet().add(LOBBY_SET_KEY, gameId) > 0;
   }
 
   public boolean closeLobby(String gameId) {
-    return redisTemplate.opsForSet().remove("openLobbies", gameId) > 0;
+    return redisTemplate.opsForSet().remove(LOBBY_SET_KEY, gameId) > 0;
   }
 
   public boolean isLobbyOpen(String gameId) {
-    return redisTemplate.opsForSet().isMember("openLobbies", gameId);
+    return redisTemplate.opsForSet().isMember(LOBBY_SET_KEY, gameId);
+  }
+
+  public boolean startGame(String gameId) {
+    return redisTemplate.opsForSet().add(GAME_SET_KEY, gameId) > 0;
+  }
+
+  public boolean isGameCreated(String gameId) {
+    return redisTemplate.opsForSet().isMember(GAME_SET_KEY, gameId);
   }
 }

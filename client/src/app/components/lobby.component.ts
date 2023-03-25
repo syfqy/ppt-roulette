@@ -7,6 +7,8 @@ import { Message } from '@stomp/stompjs';
 import { PlayerService } from '../services/player.service';
 import { LobbyUpdate } from '../models/lobby-update.model';
 import { Lobby } from '../models/lobby.model';
+import { GameService } from '../services/game.service';
+import { GameStateService } from '../services/game-state.service';
 
 @Component({
   selector: 'app-lobby',
@@ -34,7 +36,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private rxStompService: RxStompService,
     private router: Router,
-    private playerService: PlayerService
+    private playerService: PlayerService,
+    private gameService: GameService,
+    private gameStateService: GameStateService
   ) {}
 
   ngOnInit(): void {
@@ -83,7 +87,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
     // notify lobby of new player joining
     this.notifyLobby(true);
 
-    // TODO: reorder fetch before notifying start
     // subscribe to lobby's start game event
     this.startTopicSub$ = this.rxStompService
       .watch(this.startTopic)
@@ -116,19 +119,32 @@ export class LobbyComponent implements OnInit, OnDestroy {
     });
   }
 
-  getGameRoute(gameRoute: string[], playerRole: string): string[] {
+  notifyStartGame() {
+    this.rxStompService.publish({
+      destination: this.startDestination,
+    });
+  }
+
+  createGame() {
+    this.gameService
+      .createGame(this.gameId)
+      .then((res) => {
+        this.gameStateService.setGame(res);
+        console.table(res);
+
+        // notify lobby of game start
+        this.notifyStartGame();
+      })
+      .catch((err) => console.error(err));
+  }
+
+  private getGameRoute(gameRoute: string[], playerRole: string): string[] {
     if (playerRole.toLowerCase() === 'speaker') return gameRoute;
     return [...gameRoute, playerRole.toLowerCase()];
   }
 
-  appendGameId(route: string, gameId: string) {
+  private appendGameId(route: string, gameId: string) {
     return `${route}/${gameId}`;
-  }
-
-  startGame() {
-    this.rxStompService.publish({
-      destination: this.startDestination,
-    });
   }
 
   ngOnDestroy(): void {

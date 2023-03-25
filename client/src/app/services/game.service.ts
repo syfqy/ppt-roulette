@@ -10,13 +10,9 @@ import { Player } from '../models/player.model';
 export class GameService {
   constructor(private httpClient: HttpClient) {}
 
-  startGame(gameId: string): Promise<Game> {
+  createGame(gameId: string): Promise<Game> {
     return lastValueFrom(
-      this.httpClient.get<Game>(`/api/game/start/${gameId}`)
+      this.httpClient.get<Game>(`/api/game/create/${gameId}`)
     );
-  }
-
-  getImages(): Promise<string[]> {
-    return lastValueFrom(this.httpClient.get<string[]>('/api/game/images'));
   }
 }

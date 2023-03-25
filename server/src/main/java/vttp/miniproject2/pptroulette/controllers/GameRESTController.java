@@ -21,7 +21,7 @@ import vttp.miniproject2.pptroulette.services.GameService;
 import vttp.miniproject2.pptroulette.services.LobbyService;
 
 @RestController
-@RequestMapping(path = "/api/game", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GameRESTController {
 
   @Autowired
@@ -30,7 +30,10 @@ public class GameRESTController {
   @Autowired
   private GameService gameService;
 
-  @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(
+    path = "/lobby/create",
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
   public ResponseEntity<String> createLobby(@RequestBody Player host) {
     System.out.println(">>> Creating new lobby for host: " + host.getName());
 
@@ -45,7 +48,7 @@ public class GameRESTController {
   }
 
   // FIXME: Change to POST mapping, require player in req body
-  @GetMapping(path = "/join/{gameId}")
+  @GetMapping(path = "/lobby/join/{gameId}")
   public ResponseEntity<String> joinLobby(@PathVariable String gameId) {
     // validate lobby
 
@@ -63,8 +66,8 @@ public class GameRESTController {
     return ResponseEntity.ok(resp.toString());
   }
 
-  @GetMapping(path = "/start/{gameId}")
-  public ResponseEntity<String> startGame(@PathVariable String gameId) {
+  @GetMapping(path = "/game/create/{gameId}")
+  public ResponseEntity<String> createGame(@PathVariable String gameId) {
     // start game
     Optional<Game> opt = gameService.createGame(gameId);
     if (opt.isEmpty()) return ResponseEntity

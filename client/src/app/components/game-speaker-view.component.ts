@@ -13,6 +13,7 @@ import { RxStompService } from '../services/rx-stomp.service';
 import { Message } from '@stomp/stompjs';
 import { Player } from '../models/player.model';
 import { PlayerService } from '../services/player.service';
+import { GameStateService } from '../services/game-state.service';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -63,6 +64,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
   constructor(
     private gameService: GameService,
+    private gameStateService: GameStateService,
     private playerService: PlayerService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -77,18 +79,6 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
       this.gameId = params['gameId'];
     });
-
-    // TODO: move method to lobby component, reorder fetch before navigate to speaker view
-    // fetch game data from server
-    this.gameService
-      .startGame(this.gameId)
-      .then((res) => {
-        console.log(res);
-        this.currentGame = res;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
 
     //   // subscribe to timer to change slide
     //   this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
