@@ -5,15 +5,16 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { Game } from '../models/game.model';
-import { GameService } from '../services/game.service';
 import { RxStompService } from '../services/rx-stomp.service';
-import { Message } from '@stomp/stompjs';
 import { Player } from '../models/player.model';
 import { PlayerService } from '../services/player.service';
 import { GameStateService } from '../services/game-state.service';
+import { Deck } from '../models/deck.model';
+import { Slide } from '../models/slide.model';
+import { DeckMaterials } from '../models/deck-materials.model';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -21,24 +22,20 @@ import { GameStateService } from '../services/game-state.service';
   styleUrls: ['./game-speaker-view.component.css'],
 })
 export class GameSpeakerViewComponent implements OnInit, OnDestroy {
-  gameId!: string;
-  game!: Game;
-  timePerSlide: number = 3;
-  timeElapsed: number = 0;
-  currentGame!: Game;
-  prevState!: any;
   speaker!: Player;
-  players!: Player[];
-  judges!: Player[];
+  game!: Game;
+  deck!: Deck;
 
-  promptIdx: number = -1;
-  imageIdx: number = -1;
-  slideIdx: number = -1;
+  timePerSlide!: number;
+  timeElapsed: number = 0;
+  currSlideIdx: number = 0;
+  currSlide!: Slide;
+  numSlides!: number;
 
   nextSlideSub$!: Subscription;
   nextSlideEvent = new Subject<void>();
-  currentSlide!: TemplateRef<any>;
-  currentImage!: string;
+  currTemplate!: TemplateRef<any>;
+
   reactions: string[] = [];
 
   slideDestination: string = '/game/slide';
@@ -53,70 +50,81 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   // reactionDestination: string = '/lobby/start';
   routeSub$!: Subscription;
 
-  @ViewChild('topicSlide')
-  topicSlide!: TemplateRef<any>;
+  @ViewChild('topicTemplate')
+  topicTemplate!: TemplateRef<any>;
 
-  @ViewChild('promptSlide')
-  promptSlide!: TemplateRef<any>;
+  @ViewChild('promptTemplate')
+  promptTemplate!: TemplateRef<any>;
 
-  @ViewChild('imageSlide')
-  imageSlide!: TemplateRef<any>;
+  @ViewChild('imageTemplate')
+  imageTemplate!: TemplateRef<any>;
 
   constructor(
-    private gameService: GameService,
     private gameStateService: GameStateService,
     private playerService: PlayerService,
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private rxStompService: RxStompService
   ) {}
 
   ngOnInit(): void {
-    // // get current player
-    // this.currentPlayer = this.playerService.getPlayer();
+    // get player
+    this.speaker = this.playerService.getPlayer();
 
-    // get gameId from route
-    this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
-      this.gameId = params['gameId'];
+    // get game
+    this.game = this.gameStateService.getGame();
+    this.timePerSlide = this.game.timePerSlide;
+
+    // create deck from deck materials
+    this.deck = Deck.createFromDeckMaterials(
+      this.game.deckMaterials as DeckMaterials
+    );
+    this.numSlides = this.deck.slides.length;
+
+    // subscribe to next slide event when timer up, trigger next slide
+    this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
+      this.currSlideIdx++;
+      this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
+      this.currTemplate = this.changeTemplate(this.currSlide);
     });
 
-    //   // subscribe to timer to change slide
-    //   this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
-    //     this.slideIdx++;
-    //     this.slideIdx % 2 === 0 ? this.promptIdx++ : this.imageIdx++;
-    //     console.log('>>> slide number: ' + this.slideIdx);
-    //     console.log('>>> prompt number: ' + this.promptIdx);
-    //     console.log('>>> image number: ' + this.imageIdx);
-    //     this.currentSlide = this.changeSlide();
-    //   });
+    // start timer
+    let timer = setInterval(() => {
+      // if not at last slide, fire next slide event when time is up
+      if (
+        this.timeElapsed >= this.game.timePerSlide &&
+        this.currSlideIdx < this.numSlides
+      ) {
+        this.nextSlideEvent.next();
 
-    //   // start timer
-    //   let timer = setInterval(() => {
-    //     // if not at last slide, fire next slide event and reset timer
-    //     if (this.timeElapsed >= this.timePerSlide && this.slideIdx < 5) {
-    //       this.nextSlideEvent.next();
+        // TODO: create clean up function to call when next slide
+        this.timePerSlide = this.game.timePerSlide;
+        this.timeElapsed = 0;
+        this.reactions = [];
 
-    //       this.timePerSlide = 10;
-    //       this.timeElapsed = 0;
-    //       this.reactions = [];
-    //       this.sendNextSlide(); // notify other players
-    //     } else if (this.slideIdx >= 5) {
-    //       clearInterval(timer);
-    //     }
-    //     this.timeElapsed += 0.1;
-    //   }, 100);
+        // this.sendNextSlide(); // notify other players
+      } else if (this.currSlideIdx >= this.numSlides) {
+        // end round
+        clearInterval(timer);
+      }
+      this.timeElapsed += 0.1;
+    }, 100);
   }
 
-  // changeSlide(): TemplateRef<any> {
-  //   // project slide content into slide component
-  //   const nextSlide =
-  //     this.slideIdx === 0
-  //       ? this.topicSlide
-  //       : this.slideIdx % 2 === 0
-  //       ? this.promptSlide
-  //       : this.imageSlide;
-  //   return nextSlide;
-  // }
+  private changeTemplate(slide: Slide): TemplateRef<any> {
+    // project slide content into slide component
+    console.log('>>> changing template');
+    console.table(slide);
+    switch (slide.getType().toLowerCase()) {
+      case 'topic':
+        return this.topicTemplate;
+      case 'prompt':
+        return this.promptTemplate;
+      case 'image':
+        return this.imageTemplate;
+      default:
+        return this.topicTemplate;
+    }
+  }
 
   // sendNextSlide(): void {
   //   this.rxStompService.publish({

@@ -1,6 +1,8 @@
 import { DeckMaterials } from './deck-materials.model';
 import { Image } from './image.model';
+import { Prompt } from './prompt.model';
 import { Slide } from './slide.model';
+import { Topic } from './topic.model';
 
 export class Deck {
   slides: Slide[];
@@ -11,17 +13,57 @@ export class Deck {
     this.imageSelectionArrs = imageSelectionArrs;
   }
 
-  public createFromDeckMaterials(deckMaterials: DeckMaterials) {
-    this.imageSelectionArrs = deckMaterials.images;
-    this.slides.push(deckMaterials.topic);
-    for (let i = 0; i < deckMaterials.images.length; i++) {
-      this.slides.push(deckMaterials.images[i][0]);
-      if (i < deckMaterials.prompts.length)
-        this.slides.push(deckMaterials.prompts[i]);
+  static createFromDeckMaterials(deckMaterials: DeckMaterials): Deck {
+    const slides: Slide[] = [];
+    const imageSelectionArrs: Image[][] = [];
+
+    deckMaterials.imageLists.forEach((imageArr) => {
+      const newImageArr: Image[] = [];
+      imageArr.forEach((image) => {
+        newImageArr.push(this.createImage(image.imageId, image.imageUrl));
+      });
+      imageSelectionArrs.push(newImageArr);
+    });
+
+    slides.push(
+      this.createTopic(
+        deckMaterials.topic.topicId,
+        deckMaterials.topic.topicText
+      )
+    );
+
+    for (let i = 0; i < deckMaterials.imageLists.length; i++) {
+      let imageMaterial = deckMaterials.imageLists[i][0];
+      slides.push(
+        this.createImage(imageMaterial.imageId, imageMaterial.imageUrl)
+      );
+      if (i < deckMaterials.prompts.length) {
+        let promptMaterial = deckMaterials.prompts[i];
+        slides.push(
+          this.createPrompt(promptMaterial.promptId, promptMaterial.promptText)
+        );
+      }
     }
+
+    return new Deck(slides, deckMaterials.imageLists);
   }
 
-  public setSlideByIdx(idx: number, slide: Slide) {
+  private static createTopic(topicId: string, topicText: string): Topic {
+    return new Topic(topicId, topicText);
+  }
+
+  private static createPrompt(promptId: string, promptText: string): Prompt {
+    return new Prompt(promptId, promptText);
+  }
+  private static createImage(imageId: string, imageUrl: string): Image {
+    return new Image(imageId, imageUrl);
+  }
+
+  setSlideByIdx(idx: number, slide: Slide) {
     this.slides[idx] = slide;
+  }
+
+  getSlideByIdx(idx: number) {
+    return this.slides[idx];
   }
 }

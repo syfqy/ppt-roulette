@@ -5,5 +5,5 @@ import { Topic } from './topic.model';
 export interface DeckMaterials {
   topic: Topic;
   prompts: Prompt[];
-  images: Image[][];
+  imageLists: Image[][];
 }

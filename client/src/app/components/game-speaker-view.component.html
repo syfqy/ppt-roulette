@@ -1,25 +1,25 @@
 <mat-progress-spinner
   color="primary"
   mode="determinate"
-  [value]="(timeElapsed / timePerSlide) * 100"
+  [value]="(timeElapsed / game.timePerSlide) * 100"
 >
 </mat-progress-spinner>
-<p>Time left: {{ timePerSlide - timeElapsed | number : "1.0-0" }}</p>
-<p>Slide: {{ slideIdx + 1 }} / 6</p>
+<p>Time left: {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}</p>
+<!-- <p>Slide: {{ slideIdx + 1 }} / 6</p> -->
 
-<app-game-slide [slideContent]="currentSlide"></app-game-slide>
+<app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
 
 <!-- projectable templates -->
 
-<!-- <ng-template #topicSlide>
-  <h2>{{ currentGame.topic }}</h2>
+<ng-template #topicTemplate>
+  <h2>{{ currSlide.getContent() }}</h2>
 </ng-template>
-<ng-template #promptSlide>
-  <h3>{{ currentGame.prompts[promptIdx] }}</h3>
+<ng-template #promptTemplate>
+  <h3>{{ currSlide.getContent() }}</h3>
 </ng-template>
-<ng-template #imageSlide>
-  <img style="max-width: 480px" [src]="currentImage" />
-</ng-template> -->
+<ng-template #imageTemplate>
+  <img style="max-width: 480px" [src]="currSlide.getContent()" />
+</ng-template>
 
 <div class="reaction-list">
   <p *ngFor="let reaction of reactions">{{ reaction }}</p>
