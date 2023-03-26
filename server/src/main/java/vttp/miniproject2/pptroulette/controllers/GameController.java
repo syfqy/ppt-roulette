@@ -80,9 +80,9 @@ public class GameController {
   @SendTo("/topic/reactions/{gameId}")
   public String sendReaction(
     @DestinationVariable String gameId,
-    String message
+    String reaction
   ) {
-    System.out.println(">>> message: " + message);
-    return message;
+    System.out.println(">>> Reaction sent to speaker");
+    return reaction;
   }
 }

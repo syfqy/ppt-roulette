@@ -22,5 +22,7 @@
 </ng-template>
 
 <div class="reaction-list">
-  <p *ngFor="let reaction of reactions">{{ reaction }}</p>
+  <p *ngFor="let reaction of reactions">
+    {{ reaction.judgeName }} : {{ reaction.text }}
+  </p>
 </div>

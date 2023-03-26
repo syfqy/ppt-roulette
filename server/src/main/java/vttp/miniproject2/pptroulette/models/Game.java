@@ -11,7 +11,8 @@ public class Game {
   private Player assistant;
   private List<Player> judges;
   private DeckMaterials deckMaterials;
-  private Integer timePerSlide = 5;
+  //TODO: time can be moved to client side
+  private Integer timePerSlide = 10;
 
   public Game(Lobby lobby) {
     this.gameId = lobby.getGameId();

@@ -17,6 +17,7 @@ import { Slide } from '../models/slide.model';
 import { DeckMaterials } from '../models/deck-materials.model';
 import { Image } from '../models/image.model';
 import { Message } from '@stomp/stompjs';
+import { Reaction } from '../models/reaction.model';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -37,7 +38,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   nextSlideEvent = new Subject<void>();
   currTemplate!: TemplateRef<any>;
 
-  reactions: string[] = [];
+  reactions: Reaction[] = [];
 
   reactionsTopic: string = '/topic/reactions';
   imageSelectedTopic: string = '/topic/imageSelected';
@@ -72,7 +73,10 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     // get game
     this.game = this.gameStateService.getGame();
     this.timeForCurrSlide = this.game.timePerSlide;
+
+    // set up topics and destinations
     this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
+    this.reactionsTopic = `${this.reactionsTopic}/${this.game.gameId}`;
     this.imageOptionsDestination = `${this.imageOptionsDestination}/${this.game.gameId}`;
 
     // create deck from deck materials
@@ -111,6 +115,16 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
         );
         // WARNING: might need to prevent last minute send by assistant
         this.deck.setSlideByIdx(this.currSlideIdx + 1, imageSelected);
+      });
+
+    // subscribe to reactions from judges
+    this.reactionsTopicSub$ = this.rxStompService
+      .watch(this.reactionsTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> received reaction from judge');
+        console.log(JSON.parse(message.body));
+        const reaction: Reaction = JSON.parse(message.body);
+        this.reactions.push(reaction);
       });
 
     // start timer
