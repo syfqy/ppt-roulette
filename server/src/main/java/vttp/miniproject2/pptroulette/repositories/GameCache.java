@@ -1,57 +1,57 @@
 package vttp.miniproject2.pptroulette.repositories;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import java.io.StringReader;
-import java.util.List;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import vttp.miniproject2.pptroulette.models.Player;
+import vttp.miniproject2.pptroulette.models.Lobby;
 
 @Repository
 public class GameCache {
+
+  //TODO: Set TTL on lobbies
 
   @Autowired
   @Qualifier("GAME_CACHE")
   private RedisTemplate<String, String> redisTemplate;
 
-  public boolean createGame(String gameId) {
-    return redisTemplate.opsForSet().add("ongoingGames", gameId) > 0;
+  @Autowired
+  private Gson gson;
+
+  private static final String LOBBY_SET_KEY = "lobbies";
+  private static final String GAME_SET_KEY = "games";
+
+  public Lobby getLobby(String gameId) {
+    String result = redisTemplate.opsForValue().get(gameId);
+    return gson.fromJson(result, Lobby.class);
   }
 
-  public boolean removeGame(String gameId) {
-    return redisTemplate.opsForSet().remove("ongoingGames", gameId) > 0;
+  public void removeLobby(String gameId) {
+    redisTemplate.opsForValue().getAndDelete(gameId);
   }
 
-  public boolean isGameOngoing(String gameId) {
-    return redisTemplate.opsForSet().isMember("ongoingGames", gameId);
+  public void upsertLobby(Lobby lobby) {
+    redisTemplate.opsForValue().set(lobby.getGameId(), gson.toJson(lobby));
   }
 
-  public List<Player> addPlayer(Player player, String gameId) {
-    Long numOfPlayers = redisTemplate.opsForList().size(gameId);
+  public boolean openLobby(String gameId) {
+    return redisTemplate.opsForSet().add(LOBBY_SET_KEY, gameId) > 0;
+  }
 
-    // game exists and still available slots, then add new player
-    if (isGameOngoing(gameId) && numOfPlayers < 5) {
-      System.out.println(
-        ">>> %d slot(s) available, joining game".formatted(5 - numOfPlayers)
-      );
-      redisTemplate.opsForList().rightPush(gameId, player.toJson().toString());
-    }
+  public boolean closeLobby(String gameId) {
+    return redisTemplate.opsForSet().remove(LOBBY_SET_KEY, gameId) > 0;
+  }
 
-    List<Player> players = redisTemplate
-      .opsForList()
-      .range(gameId, 0, -1)
-      .stream()
-      .map(p -> {
-        JsonReader reader = Json.createReader(new StringReader(p));
-        JsonObject json = reader.readObject();
-        return json;
-      })
-      .map(json -> Player.fromJson(json))
-      .toList();
-    return players;
+  public boolean isLobbyOpen(String gameId) {
+    return redisTemplate.opsForSet().isMember(LOBBY_SET_KEY, gameId);
+  }
+
+  public boolean startGame(String gameId) {
+    return redisTemplate.opsForSet().add(GAME_SET_KEY, gameId) > 0;
+  }
+
+  public boolean isGameCreated(String gameId) {
+    return redisTemplate.opsForSet().isMember(GAME_SET_KEY, gameId);
   }
 }

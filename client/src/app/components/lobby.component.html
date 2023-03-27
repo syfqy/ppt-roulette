@@ -4,21 +4,21 @@
 
 <h2 *ngIf="!!hostPlayer">Host: {{ hostPlayer.name }}</h2>
 
-<div class="player-list">
+<div *ngIf="!!lobby" class="player-list">
   <ol>
-    <li *ngFor="let player of players">
-      {{ player.name }} <span *ngIf="player.host">HOST</span>
+    <li *ngFor="let player of lobby.players">
+      {{ player.name }} <span *ngIf="player.host">HOST </span>
       <span>{{ player.role }}</span>
     </li>
   </ol>
 </div>
 
 <button
-  *ngIf="currentPlayer.host"
-  [disabled]="!isGameReadyToStart()"
+  *ngIf="currentPlayer.host && !!lobby"
+  [disabled]="!lobby.canStartGame"
   mat-raised-button
   color="primary"
-  (click)="startGame()"
+  (click)="createGame()"
 >
   Start Game
 </button>

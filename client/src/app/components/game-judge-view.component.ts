@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Player } from '../models/player.model';
+import { PlayerService } from '../services/player.service';
 import { RxStompService } from '../services/rx-stomp.service';
 
 @Component({
@@ -10,55 +11,46 @@ import { RxStompService } from '../services/rx-stomp.service';
   styleUrls: ['./game-judge-view.component.css'],
 })
 export class GameJudgeViewComponent implements OnInit, OnDestroy {
-  prevState!: any;
   gameId!: string;
-  currentPlayer!: Player;
-  canReact: boolean = false;
+  judge!: Player;
 
   reactionsDestination: string = '/game/reactions';
 
-  nextSlideTopic: string = '/topic/slide';
-  nextSlideTopicSub$!: Subscription;
+  routeSub$!: Subscription;
 
-  constructor(private rxStompService: RxStompService, private router: Router) {
-    // get state from lobby
-    const state = this.router.getCurrentNavigation()?.extras.state;
-    console.log('>>> state');
-    console.table(state);
-    this.prevState = state;
-  }
+  constructor(
+    private rxStompService: RxStompService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private playerService: PlayerService
+  ) {}
 
   ngOnInit(): void {
-    if (!!this.prevState) {
-      this.gameId = this.prevState['gameId'];
-      this.currentPlayer = this.prevState['currentPlayer'];
+    // get player
+    this.judge = this.playerService.getPlayer();
 
-      // set topics and destinations
-      this.nextSlideTopic = `${this.nextSlideTopic}/${this.gameId}`;
+    // get game id
+    this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
+      this.gameId = params['gameId'];
       this.reactionsDestination = `${this.reactionsDestination}/${this.gameId}`;
-
-      this.nextSlideTopicSub$ = this.rxStompService
-        .watch(this.nextSlideTopic)
-        .subscribe(() => {
-          // enable reactions
-          this.canReact = true;
-        });
-    }
+    });
   }
 
-  sendReaction() {
-    const message = {
-      judge: this.currentPlayer.name,
-      reaction: '😂',
+  notifyReaction() {
+    const reaction = {
+      judgeName: this.judge.name,
+      text: '😂',
     };
+
+    console.log('>>> sending reaction to speaker');
 
     this.rxStompService.publish({
       destination: this.reactionsDestination,
-      body: JSON.stringify(message),
+      body: JSON.stringify(reaction),
     });
   }
 
   ngOnDestroy() {
-    this.nextSlideTopicSub$.unsubscribe();
+    this.routeSub$.unsubscribe();
   }
 }

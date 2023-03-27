@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Player } from '../models/player.model';
 
 @Injectable({
@@ -10,11 +11,17 @@ export class PlayerService {
    */
 
   private player: Player = new Player('default', '', false);
+  onPlayerChange: Subject<Player> = new Subject();
 
   constructor() {}
 
   getPlayer() {
     return this.player;
+  }
+
+  setPlayer(player: Player) {
+    this.player = player;
+    this.onPlayerChange.next(this.player);
   }
 
   setPlayerName(name: string) {

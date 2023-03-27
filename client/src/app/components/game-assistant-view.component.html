@@ -1,8 +1,21 @@
-<h3>Assistant: {{ this.currentPlayer.name }}</h3>
-<div class="image-choices">
+<h3>Assistant: {{ assistant.name }}</h3>
+<!-- TODO: show bigger image when selected -->
+<div *ngIf="!!imageOptions" class="image-options">
   <img
-    *ngFor="let imageUrl of images[imageIdx]"
-    [src]="imageUrl"
-    (click)="selectNextImage(imageUrl)"
+    *ngFor="let image of imageOptions"
+    [ngClass]="{
+      'apply-hover': !imageConfirmed,
+      'can-select': !imageConfirmed
+    }"
+    [src]="image.imageUrl"
+    (click)="selectImage(image)"
   />
+  <button
+    mat-raised-button
+    [disabled]="!imageSelected || imageConfirmed"
+    (click)="notifyImageSelected()"
+    color="primary"
+  >
+    Confirm
+  </button>
 </div>

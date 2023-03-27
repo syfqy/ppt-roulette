@@ -8,10 +8,16 @@ import {
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { Game } from '../models/game.model';
-import { GameService } from '../services/game.service';
 import { RxStompService } from '../services/rx-stomp.service';
-import { Message } from '@stomp/stompjs';
 import { Player } from '../models/player.model';
+import { PlayerService } from '../services/player.service';
+import { GameStateService } from '../services/game-state.service';
+import { Deck } from '../models/deck.model';
+import { Slide } from '../models/slide.model';
+import { DeckMaterials } from '../models/deck-materials.model';
+import { Image } from '../models/image.model';
+import { Message } from '@stomp/stompjs';
+import { Reaction } from '../models/reaction.model';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -19,158 +25,156 @@ import { Player } from '../models/player.model';
   styleUrls: ['./game-speaker-view.component.css'],
 })
 export class GameSpeakerViewComponent implements OnInit, OnDestroy {
-  totalTime: number = 3;
-  timeElapsed: number = 0;
-  currentGame!: Game;
-  prevState!: any;
-  gameId!: string;
   speaker!: Player;
-  players!: Player[];
-  judges!: Player[];
+  game!: Game;
+  deck!: Deck;
 
-  promptIdx: number = -1;
-  imageIdx: number = -1;
-  slideIdx: number = -1;
+  timeForCurrSlide!: number;
+  timeElapsed: number = 0;
+  currSlideIdx: number = -1;
+  currSlide!: Slide;
+  numSlides!: number;
+
+  nextSlideEvent = new Subject<void>();
+  currTemplate!: TemplateRef<any>;
+
+  reactions: Reaction[] = [];
+
+  reactionsTopic: string = '/topic/reactions';
+  imageSelectedTopic: string = '/topic/imageSelected';
+
+  imageOptionsDestination: string = '/game/imageOptions';
 
   nextSlideSub$!: Subscription;
-  nextSlideEvent = new Subject<void>();
-  currentSlide!: TemplateRef<any>;
-  currentImage!: string;
-  reactions: string[] = [];
-
-  slideDestination: string = '/game/slide';
-
-  // slideTopic: string = '/topic/slide';
-  reactionsTopic: string = '/topic/reactions';
-  imageTopic: string = '/topic/image';
-
-  // slideTopicSub$!: Subscription;
   reactionsTopicSub$!: Subscription;
-  imageTopicSub$!: Subscription;
-  // reactionDestination: string = '/lobby/start';
+  imageSelectedTopicSub$!: Subscription;
+  routeSub$!: Subscription;
 
-  @ViewChild('topicSlide')
-  topicSlide!: TemplateRef<any>;
+  @ViewChild('topicTemplate')
+  topicTemplate!: TemplateRef<any>;
 
-  @ViewChild('promptSlide')
-  promptSlide!: TemplateRef<any>;
+  @ViewChild('promptTemplate')
+  promptTemplate!: TemplateRef<any>;
 
-  @ViewChild('imageSlide')
-  imageSlide!: TemplateRef<any>;
+  @ViewChild('imageTemplate')
+  imageTemplate!: TemplateRef<any>;
 
   constructor(
-    private gameService: GameService,
+    private gameStateService: GameStateService,
+    private playerService: PlayerService,
     private router: Router,
     private rxStompService: RxStompService
-  ) {
-    const state = this.router.getCurrentNavigation()?.extras.state;
-    console.log('>>> state');
-    console.table(state);
-    this.prevState = state;
-  }
+  ) {}
 
   ngOnInit(): void {
-    // get state from lobby
-    if (!!this.prevState) {
-      this.gameId = this.prevState['gameId'];
-      this.speaker = this.prevState['currentPlayer'];
-      this.players = this.prevState['players'];
-      this.judges = this.players.filter((p) => p.role === 'Judge');
+    // get player
+    this.speaker = this.playerService.getPlayer();
 
-      // set topics
-      // this.slideTopic = `${this.slideTopic}/${this.gameId}`;
-      this.slideDestination = `${this.slideDestination}/${this.gameId}`;
+    // get game
+    this.game = this.gameStateService.getGame();
+    this.timeForCurrSlide = this.game.timePerSlide;
 
-      this.reactionsTopic = `${this.reactionsTopic}/${this.gameId}`;
-      this.imageTopic = `${this.imageTopic}/${this.gameId}`;
+    // set up topics and destinations
+    this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
+    this.reactionsTopic = `${this.reactionsTopic}/${this.game.gameId}`;
+    this.imageOptionsDestination = `${this.imageOptionsDestination}/${this.game.gameId}`;
 
-      this.reactionsTopicSub$ = this.rxStompService
-        .watch(this.reactionsTopic)
-        .subscribe((message: Message) => {
-          // show reaction from judge
-          const msg = JSON.parse(message.body);
-          console.log(
-            '>>> Reaction: ' + msg.reaction + ' from judge: ' + msg.judge
-          );
-          this.reactions.push(`${msg.judge}: ${msg.reaction}`);
-        });
+    // create deck from deck materials
+    this.deck = Deck.createFromDeckMaterials(
+      this.game.deckMaterials as DeckMaterials
+    );
+    this.numSlides = this.deck.slides.length;
+    console.log('>>> deck prepared');
+    console.log(this.deck);
 
-      this.imageTopicSub$ = this.rxStompService
-        .watch(this.imageTopic)
-        .subscribe((message: Message) => {
-          // select next image from judge
-          // const nextImage = JSON.parse(message.body);
-          // this.currentImage = nextImage.imageUrl;
-          this.currentImage = message.body;
+    // subscribe to next slide event when timer up, change view to next slide
+    this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
+      this.currSlideIdx++;
+      this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
+      this.currTemplate = this.changeTemplate(this.currSlide);
 
-          console.log(
-            '>>> received next image from asssistant: ' + this.currentImage
-          );
-        });
-
-      // if player is speaker, then fetch game data from server
-      if (this.speaker.role === 'Speaker') {
-        this.gameService
-          .startGame(this.speaker.name, this.players, this.gameId)
-          .then((res) => {
-            console.log('>>> Intializing game');
-            console.log(res);
-            this.currentGame = res;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+      // notify assistant of image options
+      if (this.currSlide.getType().toLowerCase() !== 'image') {
+        const i = Math.floor(this.currSlideIdx / 2);
+        console.log('>>> image options prepared');
+        console.log(this.deck.imageSelectionArrs[i]);
+        this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
       }
+    });
 
-      // subscribe to timer to change slide
-      this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
-        this.slideIdx++;
-        this.slideIdx % 2 === 0 ? this.promptIdx++ : this.imageIdx++;
-        console.log('>>> slide number: ' + this.slideIdx);
-        console.log('>>> prompt number: ' + this.promptIdx);
-        console.log('>>> image number: ' + this.imageIdx);
-        this.currentSlide = this.changeSlide();
+    // subscribe to image selected by assistant
+    this.imageSelectedTopicSub$ = this.rxStompService
+      .watch(this.imageSelectedTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> received selected image from assistant');
+        console.log(JSON.parse(message.body));
+        const images: Image = JSON.parse(message.body) as Image;
+        const imageSelected: Image = Deck.createImage(
+          images.imageId,
+          images.imageUrl
+        );
+        // WARNING: might need to prevent last minute send by assistant
+        this.deck.setSlideByIdx(this.currSlideIdx + 1, imageSelected);
       });
-    }
+
+    // subscribe to reactions from judges
+    this.reactionsTopicSub$ = this.rxStompService
+      .watch(this.reactionsTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> received reaction from judge');
+        console.log(JSON.parse(message.body));
+        const reaction: Reaction = JSON.parse(message.body);
+        this.reactions.push(reaction);
+      });
 
     // start timer
     let timer = setInterval(() => {
-      // if not at last slide, fire next slide event and reset timer
-      if (this.timeElapsed >= this.totalTime && this.slideIdx < 5) {
-        this.nextSlideEvent.next();
+      if (this.timeElapsed >= this.timeForCurrSlide) {
+        if (this.currSlideIdx < this.numSlides - 1) {
+          // if not at last slide when time up, trigger next slide and reset
+          console.log('>>> time up, next slide event triggered');
+          this.nextSlideEvent.next();
 
-        this.totalTime = 10;
-        this.timeElapsed = 0;
-        this.reactions = [];
-        this.sendNextSlide(); // notify other players
-      } else if (this.slideIdx >= 5) {
-        clearInterval(timer);
+          // TODO: create clean up function to call when next slide
+          this.timeForCurrSlide = this.game.timePerSlide;
+          this.timeElapsed = 0;
+          this.reactions = [];
+        } else {
+          // TODO: call end round/game method
+          clearInterval(timer);
+        }
       }
       this.timeElapsed += 0.1;
     }, 100);
   }
 
-  changeSlide(): TemplateRef<any> {
-    // project slide content into slide component
-    const nextSlide =
-      this.slideIdx === 0
-        ? this.topicSlide
-        : this.slideIdx % 2 === 0
-        ? this.promptSlide
-        : this.imageSlide;
-    return nextSlide;
+  private changeTemplate(slide: Slide): TemplateRef<any> {
+    // project slide template into slide component
+    console.log('>>> changing template');
+    switch (slide.getType().toLowerCase()) {
+      case 'topic':
+        return this.topicTemplate;
+      case 'prompt':
+        return this.promptTemplate;
+      case 'image':
+        return this.imageTemplate;
+      default:
+        return this.topicTemplate;
+    }
   }
 
-  sendNextSlide(): void {
+  notifyImageOptions(imageOptions: Image[]): void {
+    console.log('>>> sending image options to assistant');
     this.rxStompService.publish({
-      destination: this.slideDestination,
-      body: this.slideIdx.toString(),
+      destination: this.imageOptionsDestination,
+      body: JSON.stringify(imageOptions),
     });
   }
 
   ngOnDestroy(): void {
     this.nextSlideSub$.unsubscribe();
-    this.imageTopicSub$.unsubscribe();
+    this.imageSelectedTopicSub$.unsubscribe();
     this.reactionsTopicSub$.unsubscribe();
+    this.routeSub$.unsubscribe();
   }
 }

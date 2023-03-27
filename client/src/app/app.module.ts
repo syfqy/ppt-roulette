@@ -17,6 +17,9 @@ import { GameSpeakerViewComponent } from './components/game-speaker-view.compone
 import { GameAssistantViewComponent } from './components/game-assistant-view.component';
 import { GameJudgeViewComponent } from './components/game-judge-view.component';
 import { GameSlideComponent } from './components/game-slide.component';
+import { ManageImagesComponent } from './components/manage-images.component';
+import { ImageListComponent } from './components/image-list.component';
+import { AddImageComponent } from './components/add-image.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +32,9 @@ import { GameSlideComponent } from './components/game-slide.component';
     GameAssistantViewComponent,
     GameJudgeViewComponent,
     GameSlideComponent,
+    ManageImagesComponent,
+    ImageListComponent,
+    AddImageComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,1 +1,11 @@
+<mat-toolbar color="warn">
+  <mat-toolbar-row>
+    <h1 [routerLink]="['/']">PPT Roulette</h1>
+    <span class="menu-spacer"></span>
+    <div class="navbar-items">
+      <a mat-button [routerLink]="['login']">Login</a>
+      <a mat-button [routerLink]="['images', 'all']">Manage Images</a>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
 <router-outlet></router-outlet>

@@ -7,7 +7,7 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 })
 export class GameSlideComponent implements OnInit {
   @Input()
-  slideContent!: TemplateRef<any>;
+  slideTemplate!: TemplateRef<any>;
 
   constructor() {}
 

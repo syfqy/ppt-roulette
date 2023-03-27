@@ -1,87 +1,88 @@
 package vttp.miniproject2.pptroulette.controllers;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import java.io.StringReader;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import vttp.miniproject2.pptroulette.models.Image;
+import vttp.miniproject2.pptroulette.models.Lobby;
+import vttp.miniproject2.pptroulette.models.LobbyUpdate;
 import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.services.GameService;
+import vttp.miniproject2.pptroulette.services.LobbyService;
 
 @Controller
 public class GameController {
 
   @Autowired
+  LobbyService lobbyService;
+
+  @Autowired
   GameService gameService;
 
-  @MessageMapping("/join/{gameId}")
-  @SendTo("/topic/join/{gameId}")
-  public List<Player> sendPlayerJoined(
+  @MessageMapping("/{gameId}")
+  @SendTo("/topic/lobby/{gameId}")
+  public Lobby sendLobbyUpdate(
     @DestinationVariable String gameId,
-    String body
+    LobbyUpdate lobbyUpdate
   ) {
-    // register new player
-    JsonReader reader = Json.createReader(new StringReader(body));
-    JsonObject json = reader.readObject();
-    Player player = Player.fromJson(json);
+    Player player = lobbyUpdate.getPlayer();
+    String lobbyAction = lobbyUpdate.isJoining() ? "joining" : "leaving";
+
+    Lobby lobby = lobbyUpdate.isJoining()
+      ? lobbyService.addPlayer(player, gameId)
+      : lobbyService.removePlayer(player, gameId);
 
     System.out.println(
-      ">>> Player: %s joining game: %s".formatted(player.getName(), gameId)
+      ">>> Player: %s %s game: %s".formatted(
+          player.getName(),
+          lobbyAction,
+          gameId
+        )
     );
 
-    List<Player> players = gameService.addPlayer(player, gameId);
-
-    // TODO: move setting roles to Lobby
-    if (players.size() >= 3) {
-      players.get(0).setRole("Speaker");
-      players.get(1).setRole("Assistant");
-      for (int i = 2; i < players.size(); i++) {
-        players.get(i).setRole("Judge");
-      }
-    }
-
-    players.forEach(p -> System.out.println(p.toString()));
-    System.out.println(">>> Number of players in lobby: " + players.size());
-
-    return players;
+    return lobby;
   }
 
   @MessageMapping("/start/{gameId}")
   @SendTo("/topic/start/{gameId}")
   public boolean sendGameStart(@DestinationVariable String gameId) {
-    return true;
+    // check game created
+    if (gameService.isGameCreated(gameId)) System.out.println(
+      ">>> Host has started game: " + gameId
+    );
+    return gameService.isGameCreated(gameId);
   }
 
-  @MessageMapping("/slide/{gameId}")
-  @SendTo("/topic/slide/{gameId}")
-  public Integer sendNextSlide(
+  @MessageMapping("/imageOptions/{gameId}")
+  @SendTo("/topic/imageOptions/{gameId}")
+  public List<Image> sendImageOptions(
     @DestinationVariable String gameId,
-    Integer slideIdx
+    List<Image> imageOptions
   ) {
-    return slideIdx;
+    System.out.println("Image options sent to asssistant");
+    return imageOptions;
   }
 
-  @MessageMapping("/nextImage/{gameId}")
-  @SendTo("/topic/image/{gameId}")
-  public String sendNextImage(
+  @MessageMapping("/imageSelected/{gameId}")
+  @SendTo("/topic/imageSelected/{gameId}")
+  public Image sendImageSelected(
     @DestinationVariable String gameId,
-    String imageUrl
+    Image imageSelected
   ) {
-    return imageUrl;
+    System.out.println("Image selected sent to speaker");
+    return imageSelected;
   }
 
   @MessageMapping("/reactions/{gameId}")
   @SendTo("/topic/reactions/{gameId}")
   public String sendReaction(
     @DestinationVariable String gameId,
-    String message
+    String reaction
   ) {
-    System.out.println(">>> message: " + message);
-    return message;
+    System.out.println(">>> Reaction sent to speaker");
+    return reaction;
   }
 }
