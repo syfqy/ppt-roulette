@@ -135,7 +135,11 @@ public class LobbyService {
     lobby
       .getPlayers()
       .forEach(player -> {
-        roleCountsMap.merge(player.getRole().toLowerCase(), 1, Integer::sum);
+        roleCountsMap.merge(
+          player.getRole().toLowerCase(),
+          1,
+          (t, u) -> Integer.sum(t, u)
+        );
       });
 
     if (roleCountsMap.get("speaker") != 1) return false;

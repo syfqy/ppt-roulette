@@ -1,0 +1,10 @@
+<h3>{{ username }}'s Images</h3>
+
+<mat-list>
+  <mat-card *ngFor="let image of images">
+    <img [src]="image.imageUrl" />
+    <button mat-flat-button color="warn" (click)="deleteImage(image.imageId)">
+      Delete
+    </button>
+  </mat-card>
+</mat-list>

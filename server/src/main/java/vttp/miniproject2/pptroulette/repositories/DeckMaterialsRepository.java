@@ -6,13 +6,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SampleOperation;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Prompt;
 import vttp.miniproject2.pptroulette.models.Topic;
 
 @Repository
-public class DeckRepository {
+public class DeckMaterialsRepository {
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -32,6 +33,11 @@ public class DeckRepository {
 
   public List<Image> getRandomImages(Integer numImages) {
     return getNRandomItems(numImages, Image.class, IMAGE_COLLECTION);
+  }
+
+  public List<Image> getImagesByUser(String userId) {
+    // TODO: query by user, add user property to document
+    return mongoTemplate.find(new Query(), Image.class, IMAGE_COLLECTION);
   }
 
   private <T> List<T> getNRandomItems(
