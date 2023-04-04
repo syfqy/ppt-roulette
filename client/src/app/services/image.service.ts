@@ -15,11 +15,11 @@ export class ImageService {
     );
   }
 
-  searchImage(query: string): Promise<Image[]> {
+  searchImages(query: string): Promise<string[]> {
     const params = new HttpParams().set('query', query);
 
     return lastValueFrom(
-      this.httpClient.get<Image[]>('/api/image', {
+      this.httpClient.get<string[]>('/api/image/search', {
         params: params,
       })
     );

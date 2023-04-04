@@ -2,10 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Message } from '@stomp/stompjs';
 import { Subscription } from 'rxjs';
-import { Deck } from '../models/deck.model';
 import { Image } from '../models/image.model';
 import { Player } from '../models/player.model';
-import { GameService } from '../services/game.service';
 import { PlayerService } from '../services/player.service';
 import { RxStompService } from '../services/rx-stomp.service';
 
@@ -14,7 +12,7 @@ import { RxStompService } from '../services/rx-stomp.service';
   templateUrl: './game-assistant-view.component.html',
   styleUrls: ['./game-assistant-view.component.css'],
 })
-export class GameAssistantViewComponent implements OnInit {
+export class GameAssistantViewComponent implements OnInit, OnDestroy {
   assistant!: Player;
   gameId!: string;
 

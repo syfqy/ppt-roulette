@@ -4,19 +4,24 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vttp.miniproject2.pptroulette.models.Image;
-import vttp.miniproject2.pptroulette.repositories.DeckRepository;
+import vttp.miniproject2.pptroulette.repositories.DeckMaterialsRepository;
 
 @Service
 public class ImageService {
 
   @Autowired
-  private DeckRepository deckRepository;
+  private DeckMaterialsRepository deckMaterialsRepo;
+
+  @Autowired
+  private PexelsAPIService pexelsAPIService;
 
   public List<Image> getImagesByUser(String userId) {
-    return deckRepository.getImagesByUser(userId);
+    return deckMaterialsRepo.getImagesByUser(userId);
   }
 
-  public void searchImage(String query) {}
+  public List<String> searchImages(String query) {
+    return pexelsAPIService.searchImages(query);
+  }
 
   public void uploadImage() {}
 

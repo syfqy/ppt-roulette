@@ -31,12 +31,14 @@ public class ImageRESTController {
   }
 
   @GetMapping("/search")
+  // TODO: implement search image
   public List<String> searchImage(@RequestParam String query) {
     System.out.println(">>> searching for images: " + query);
-    return null;
+    return imageService.searchImages(query);
   }
 
   @DeleteMapping("/{imageId}")
+  // TODO: implement delete image
   public void deleteImage(@PathVariable String imageId) {
     System.out.println(">>> deleting image " + imageId);
   }

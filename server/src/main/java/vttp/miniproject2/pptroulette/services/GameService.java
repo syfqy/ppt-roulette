@@ -11,7 +11,7 @@ import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.Prompt;
 import vttp.miniproject2.pptroulette.models.Topic;
-import vttp.miniproject2.pptroulette.repositories.DeckRepository;
+import vttp.miniproject2.pptroulette.repositories.DeckMaterialsRepository;
 import vttp.miniproject2.pptroulette.repositories.GameCache;
 
 @Service
@@ -21,7 +21,7 @@ public class GameService {
   private LobbyService lobbyService;
 
   @Autowired
-  private DeckRepository deckRepo;
+  private DeckMaterialsRepository deckMaterialsRepo;
 
   @Autowired
   private GameCache gameCache;
@@ -37,9 +37,9 @@ public class GameService {
     Game game = new Game(lobby);
 
     // create deck
-    Topic topic = deckRepo.getRandomTopic();
-    List<Prompt> prompts = deckRepo.getRandomPrompts(2);
-    List<Image> images = deckRepo.getRandomImages(9);
+    Topic topic = deckMaterialsRepo.getRandomTopic();
+    List<Prompt> prompts = deckMaterialsRepo.getRandomPrompts(2);
+    List<Image> images = deckMaterialsRepo.getRandomImages(9);
     List<List<Image>> imageLists = Lists.partition(images, 3);
 
     DeckMaterials deckMaterials = new DeckMaterials();
