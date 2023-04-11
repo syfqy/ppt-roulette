@@ -6,5 +6,6 @@ import lombok.Data;
 public class Image {
 
   private String imageId;
+  private String username;
   private String imageUrl;
 }

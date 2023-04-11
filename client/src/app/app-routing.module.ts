@@ -34,7 +34,7 @@ const routes: Routes = [
   { path: 'game/:gameId', component: GameSpeakerViewComponent },
   { path: 'game/:gameId/assistant', component: GameAssistantViewComponent },
   { path: 'game/:gameId/judge', component: GameJudgeViewComponent },
-  // { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({

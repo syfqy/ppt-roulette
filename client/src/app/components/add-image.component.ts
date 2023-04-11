@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageService } from '../services/image.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-image',
@@ -10,11 +11,19 @@ import { ImageService } from '../services/image.service';
 export class AddImageComponent implements OnInit {
   form!: FormGroup;
   searchResults!: string[];
+  username!: string;
 
-  constructor(private fb: FormBuilder, private imageService: ImageService) {}
+  constructor(
+    private fb: FormBuilder,
+    private imageService: ImageService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.form = this.createForm();
+
+    // TODO: get username
+    this.username = 'user1';
   }
 
   createForm(): FormGroup {
@@ -30,6 +39,15 @@ export class AddImageComponent implements OnInit {
       .searchImages(query)
       .then((res) => {
         this.searchResults = res;
+      })
+      .catch((err) => console.error(err));
+  }
+
+  saveImage(resultImageUrl: string) {
+    this.imageService
+      .saveImage(resultImageUrl, this.username)
+      .then(() => {
+        this.router.navigate(['images', 'all']);
       })
       .catch((err) => console.error(err));
   }

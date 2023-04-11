@@ -25,7 +25,16 @@ export class ImageService {
     );
   }
 
-  deleteImage(imageId: string) {
-    return lastValueFrom(this.httpClient.delete(`/api/image/{imageId}`));
+  saveImage(pexelsImageUrl: string, username: string) {
+    const body = {
+      imageUrl: pexelsImageUrl,
+      username: username,
+    };
+
+    return lastValueFrom(this.httpClient.post('/api/image/save', body));
   }
+
+  // deleteImage(imageId: string) {
+  //   return lastValueFrom(this.httpClient.delete(`/api/image/{imageId}`));
+  // }
 }

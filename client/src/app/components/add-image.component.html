@@ -8,6 +8,11 @@
 </form>
 
 <h3>Search Results:</h3>
-<mat-list *ngIf="!!searchResults">
-  <img *ngFor="let res of searchResults" [src]="res" alt="" />
+<mat-list>
+  <mat-card *ngFor="let result of searchResults">
+    <img [src]="result" alt="" />
+    <button mat-flat-button color="primary" (click)="saveImage(result)">
+      Save
+    </button>
+  </mat-card>
 </mat-list>

@@ -23,7 +23,9 @@ public class ImageService {
     return pexelsAPIService.searchImages(query);
   }
 
-  public void uploadImage() {}
+  public boolean saveImage(Image image) {
+    return deckMaterialsRepo.insertImage(image) != null;
+  }
 
   public void deleteImage() {}
 }
