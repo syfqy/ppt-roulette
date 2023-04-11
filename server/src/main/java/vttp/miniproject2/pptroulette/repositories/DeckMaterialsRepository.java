@@ -45,6 +45,11 @@ public class DeckMaterialsRepository {
     return mongoTemplate.insert(image, IMAGE_COLLECTION);
   }
 
+  public boolean deleteImage(String imageId) {
+    Query q = Query.query(Criteria.where("imageId").is(imageId));
+    return mongoTemplate.remove(q, IMAGE_COLLECTION).getDeletedCount() > 0;
+  }
+
   private <T> List<T> getNRandomItems(
     Integer numItems,
     Class<T> clazz,

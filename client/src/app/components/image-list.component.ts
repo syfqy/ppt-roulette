@@ -25,6 +25,11 @@ export class ImageListComponent implements OnInit {
   }
 
   deleteImage(imageId: string) {
-    // this.imageService.deleteImage(imageId);
+    this.imageService
+      .deleteImage(imageId)
+      .then((res) => {
+        this.images = this.images.filter((img) => img.imageId !== imageId);
+      })
+      .catch((err) => console.error(err));
   }
 }

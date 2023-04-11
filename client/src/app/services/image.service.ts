@@ -34,7 +34,7 @@ export class ImageService {
     return lastValueFrom(this.httpClient.post('/api/image/save', body));
   }
 
-  // deleteImage(imageId: string) {
-  //   return lastValueFrom(this.httpClient.delete(`/api/image/{imageId}`));
-  // }
+  deleteImage(imageId: string) {
+    return lastValueFrom(this.httpClient.delete(`/api/image/${imageId}`));
+  }
 }

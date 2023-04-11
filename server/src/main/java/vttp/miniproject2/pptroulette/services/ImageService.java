@@ -27,5 +27,7 @@ public class ImageService {
     return deckMaterialsRepo.insertImage(image) != null;
   }
 
-  public void deleteImage() {}
+  public boolean deleteImage(String imageId) {
+    return deckMaterialsRepo.deleteImage(imageId);
+  }
 }

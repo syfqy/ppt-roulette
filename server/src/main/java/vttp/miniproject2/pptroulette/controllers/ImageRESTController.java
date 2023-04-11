@@ -45,12 +45,6 @@ public class ImageRESTController {
     return imageService.searchImages(query);
   }
 
-  @DeleteMapping("/{imageId}")
-  // TODO: implement delete image
-  public void deleteImage(@PathVariable String imageId) {
-    System.out.println(">>> deleting image " + imageId);
-  }
-
   @PostMapping("/save")
   public ResponseEntity<String> saveImage(@RequestBody String body) {
     JsonReader reader = Json.createReader(new StringReader(body));
@@ -82,5 +76,29 @@ public class ImageRESTController {
       .build();
 
     return ResponseEntity.status(HttpStatus.SC_CREATED).body(resp.toString());
+  }
+
+  @DeleteMapping("/{imageId}")
+  // TODO: implement delete image
+  public ResponseEntity<String> deleteImage(@PathVariable String imageId) {
+    System.out.println(">>> deleting image " + imageId);
+
+    if (!imageService.deleteImage(imageId)) {
+      JsonObject resp = Json
+        .createObjectBuilder()
+        .add("message", "Image was not deleted")
+        .build();
+
+      return ResponseEntity
+        .status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+        .body(resp.toString());
+    }
+
+    JsonObject resp = Json
+      .createObjectBuilder()
+      .add("message", "Image deleted successfully")
+      .build();
+
+    return ResponseEntity.ok(resp.toString());
   }
 }
