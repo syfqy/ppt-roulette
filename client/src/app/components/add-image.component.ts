@@ -20,6 +20,7 @@ export class AddImageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // TODO: cache search results on local storage
     this.form = this.createForm();
 
     // TODO: get username

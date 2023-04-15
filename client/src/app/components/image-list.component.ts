@@ -8,6 +8,7 @@ import { ImageService } from '../services/image.service';
   styleUrls: ['./image-list.component.css'],
 })
 export class ImageListComponent implements OnInit {
+  // TODO: Get user from service
   username: string = 'user1';
   images: Image[] = [];
 
