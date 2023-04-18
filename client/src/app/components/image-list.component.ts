@@ -8,7 +8,8 @@ import { ImageService } from '../services/image.service';
   styleUrls: ['./image-list.component.css'],
 })
 export class ImageListComponent implements OnInit {
-  username: string = 'admin';
+  // TODO: Get user from service
+  username: string = 'user1';
   images: Image[] = [];
 
   constructor(private imageService: ImageService) {}
@@ -25,6 +26,11 @@ export class ImageListComponent implements OnInit {
   }
 
   deleteImage(imageId: string) {
-    this.imageService.deleteImage(imageId);
+    this.imageService
+      .deleteImage(imageId)
+      .then((res) => {
+        this.images = this.images.filter((img) => img.imageId !== imageId);
+      })
+      .catch((err) => console.error(err));
   }
 }

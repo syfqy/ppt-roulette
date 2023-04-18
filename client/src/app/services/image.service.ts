@@ -15,17 +15,26 @@ export class ImageService {
     );
   }
 
-  searchImage(query: string): Promise<Image[]> {
+  searchImages(query: string): Promise<string[]> {
     const params = new HttpParams().set('query', query);
 
     return lastValueFrom(
-      this.httpClient.get<Image[]>('/api/image', {
+      this.httpClient.get<string[]>('/api/image/search', {
         params: params,
       })
     );
   }
 
+  saveImage(pexelsImageUrl: string, username: string) {
+    const body = {
+      imageUrl: pexelsImageUrl,
+      username: username,
+    };
+
+    return lastValueFrom(this.httpClient.post('/api/image/save', body));
+  }
+
   deleteImage(imageId: string) {
-    return lastValueFrom(this.httpClient.delete(`/api/image/{imageId}`));
+    return lastValueFrom(this.httpClient.delete(`/api/image/${imageId}`));
   }
 }

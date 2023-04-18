@@ -10,15 +10,24 @@ import vttp.miniproject2.pptroulette.repositories.DeckMaterialsRepository;
 public class ImageService {
 
   @Autowired
-  private DeckMaterialsRepository deckRepository;
+  private DeckMaterialsRepository deckMaterialsRepo;
+
+  @Autowired
+  private PexelsAPIService pexelsAPIService;
 
   public List<Image> getImagesByUser(String userId) {
-    return deckRepository.getImagesByUser(userId);
+    return deckMaterialsRepo.getImagesByUser(userId);
   }
 
-  public void searchImage(String query) {}
+  public List<String> searchImages(String query) {
+    return pexelsAPIService.searchImages(query);
+  }
 
-  public void uploadImage() {}
+  public boolean saveImage(Image image) {
+    return deckMaterialsRepo.insertImage(image) != null;
+  }
 
-  public void deleteImage() {}
+  public boolean deleteImage(String imageId) {
+    return deckMaterialsRepo.deleteImage(imageId);
+  }
 }

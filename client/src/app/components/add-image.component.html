@@ -1,1 +1,18 @@
-<p>add-image works!</p>
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <mat-form-field appearance="fill">
+    <mat-label>Search</mat-label>
+    <input matInput formControlName="query" />
+  </mat-form-field>
+
+  <button mat-raised-button [disabled]="form.invalid">Search</button>
+</form>
+
+<h3>Search Results:</h3>
+<mat-list>
+  <mat-card *ngFor="let result of searchResults">
+    <img [src]="result" alt="" />
+    <button mat-flat-button color="primary" (click)="saveImage(result)">
+      Save
+    </button>
+  </mat-card>
+</mat-list>
