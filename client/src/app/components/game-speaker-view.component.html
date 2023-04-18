@@ -6,6 +6,7 @@
 </mat-progress-spinner>
 <p>Time left: {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}</p>
 <p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
+<h2>Score: {{ totalScore }}</h2>
 
 <app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
 
@@ -22,6 +23,8 @@
 </ng-template>
 
 <div class="reaction-list">
+  <!-- TODO: Add fade animation to reactions -->
+  <!-- TODO: Only show n most recent reaction -->
   <p *ngFor="let reaction of reactions">
     {{ reaction.judgeName }} : {{ reaction.text }}
   </p>

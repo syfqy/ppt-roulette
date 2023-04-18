@@ -18,6 +18,7 @@ import { DeckMaterials } from '../models/deck-materials.model';
 import { Image } from '../models/image.model';
 import { Message } from '@stomp/stompjs';
 import { Reaction } from '../models/reaction.model';
+import { ReactionService } from '../services/reaction.service';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -39,6 +40,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   currTemplate!: TemplateRef<any>;
 
   reactions: Reaction[] = [];
+  totalScore: number = 0;
 
   reactionsTopic: string = '/topic/reactions';
   imageSelectedTopic: string = '/topic/imageSelected';
@@ -62,6 +64,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   constructor(
     private gameStateService: GameStateService,
     private playerService: PlayerService,
+    private reactionService: ReactionService,
     private router: Router,
     private rxStompService: RxStompService
   ) {}
@@ -124,7 +127,11 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
         console.log('>>> received reaction from judge');
         console.log(JSON.parse(message.body));
         const reaction: Reaction = JSON.parse(message.body);
-        this.reactions.push(reaction);
+        this.reactionService.addReaction(reaction);
+        this.reactions = this.reactionService.getReactions();
+        this.totalScore = this.reactions.reduce((sum, currentReaction) => {
+          return sum + currentReaction.score;
+        }, 0);
       });
 
     // start timer

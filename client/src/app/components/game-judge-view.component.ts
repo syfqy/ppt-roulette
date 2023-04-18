@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { Player } from '../models/player.model';
 import { PlayerService } from '../services/player.service';
 import { RxStompService } from '../services/rx-stomp.service';
+import { Reaction } from '../models/reaction.model';
 
 @Component({
   selector: 'app-game-judge-view',
@@ -13,6 +14,29 @@ import { RxStompService } from '../services/rx-stomp.service';
 export class GameJudgeViewComponent implements OnInit, OnDestroy {
   gameId!: string;
   judge!: Player;
+
+  REACTION_OPTIONS = {
+    LAUGH: {
+      judgeName: '',
+      text: '😂',
+      score: 10,
+    },
+    POOP: {
+      judgeName: '',
+      text: '💩',
+      score: -10,
+    },
+    CLAP: {
+      judgeName: '',
+      text: '👏',
+      score: 3,
+    },
+    MINDBLOWN: {
+      judgeName: '',
+      text: '🤯',
+      score: 7,
+    },
+  };
 
   reactionsDestination: string = '/game/reactions';
 
@@ -29,6 +53,9 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
     // get player
     this.judge = this.playerService.getPlayer();
 
+    // set reaction options
+    this.initReactionOptions(this.judge.name);
+
     // get game id
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
       this.gameId = params['gameId'];
@@ -36,17 +63,18 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  notifyReaction() {
-    const reaction = {
-      judgeName: this.judge.name,
-      text: '😂',
-    };
-
+  notifyReaction(reaction: Reaction) {
     console.log('>>> sending reaction to speaker');
 
     this.rxStompService.publish({
       destination: this.reactionsDestination,
       body: JSON.stringify(reaction),
+    });
+  }
+
+  initReactionOptions(judgeName: string): void {
+    Object.entries(this.REACTION_OPTIONS).forEach(([key, val]) => {
+      val.judgeName = judgeName;
     });
   }
 
