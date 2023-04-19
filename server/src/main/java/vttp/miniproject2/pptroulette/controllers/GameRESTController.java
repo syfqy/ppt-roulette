@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vttp.miniproject2.pptroulette.models.Game;
+import vttp.miniproject2.pptroulette.models.GameResult;
 import vttp.miniproject2.pptroulette.models.Player;
 import vttp.miniproject2.pptroulette.services.GameService;
 import vttp.miniproject2.pptroulette.services.LobbyService;
@@ -88,8 +89,16 @@ public class GameRESTController {
         .body("error");
     }
   }
-  // public   methodName() {
 
-  // }
-
+  @PostMapping(path = "game/save/{gameId}")
+  public ResponseEntity<String> saveGameResult(
+    @PathVariable String gameId,
+    @RequestBody GameResult gameResult
+  ) {
+    // save game result
+    System.out.println(">>> Saving game result");
+    gameService.insertGameResult(gameResult);
+    JsonObject resp = Json.createObjectBuilder().add("gameId", gameId).build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(resp.toString());
+  }
 }

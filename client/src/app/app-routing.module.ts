@@ -10,6 +10,7 @@ import { ImageListComponent } from './components/image-list.component';
 import { JoinGameComponent } from './components/join-game.component';
 import { LobbyComponent } from './components/lobby.component';
 import { ManageImagesComponent } from './components/manage-images.component';
+import { GameOverComponent } from './components/game-over.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'game/:gameId', component: GameSpeakerViewComponent },
   { path: 'game/:gameId/assistant', component: GameAssistantViewComponent },
   { path: 'game/:gameId/judge', component: GameJudgeViewComponent },
+  { path: 'game-over/:gameId', component: GameOverComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

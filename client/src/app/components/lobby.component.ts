@@ -148,7 +148,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // notifty lobby of player leaving
+    // notify lobby of player leaving
     if (!this.gameStarted) this.notifyLobby(false);
 
     this.routeSub$.unsubscribe();

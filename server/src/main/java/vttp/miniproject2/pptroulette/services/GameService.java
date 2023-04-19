@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vttp.miniproject2.pptroulette.models.DeckMaterials;
 import vttp.miniproject2.pptroulette.models.Game;
+import vttp.miniproject2.pptroulette.models.GameResult;
 import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.Prompt;
 import vttp.miniproject2.pptroulette.models.Topic;
 import vttp.miniproject2.pptroulette.repositories.DeckMaterialsRepository;
 import vttp.miniproject2.pptroulette.repositories.GameCache;
-import vttp.miniproject2.pptroulette.repositories.ScoreRepository;
+import vttp.miniproject2.pptroulette.repositories.GameResultRepository;
 
 @Service
 public class GameService {
@@ -28,7 +29,7 @@ public class GameService {
   private GameCache gameCache;
 
   @Autowired
-  private ScoreRepository scoreRepo;
+  private GameResultRepository scoreRepo;
 
   public Optional<Game> createGame(String gameId) {
     Lobby lobby = lobbyService.getLobby(gameId);
@@ -61,7 +62,7 @@ public class GameService {
     return gameCache.isGameCreated(gameId);
   }
 
-  public boolean insertScore(String playerName, Integer score) {
-    return scoreRepo.insertScore(playerName, score);
+  public boolean insertGameResult(GameResult gameResult) {
+    return scoreRepo.insertGameResult(gameResult);
   }
 }

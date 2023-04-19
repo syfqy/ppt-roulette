@@ -6,14 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 // import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import vttp.miniproject2.pptroulette.models.GameResult;
 
 @Repository
-public class ScoreRepository {
+public class GameResultRepository {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
-  public boolean insertScore(String player_name, Integer score) {
-    return jdbcTemplate.update(SQL_INSERT_SCORE, player_name, score) > 1;
+  public boolean insertGameResult(GameResult gameResult) {
+    return (
+      jdbcTemplate.update(
+        SQL_INSERT_GAME_RESULT,
+        gameResult.getGameId(),
+        gameResult.getSpeakerName(),
+        gameResult.getAssistantName(),
+        gameResult.getScore()
+      ) >
+      1
+    );
   }
 }

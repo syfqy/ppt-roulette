@@ -2,9 +2,9 @@ package vttp.miniproject2.pptroulette.repositories;
 
 public class Queries {
 
-  public static final String SQL_INSERT_SCORE =
+  public static final String SQL_INSERT_GAME_RESULT =
     """
-        INSERT INTO scores (player_name, game_id, score)
-        VALUES (?, ?, ?)
+        INSERT INTO game_results (game_id, speaker_name, assistant_name, score)
+        VALUES (?, ?, ?, ?)
             """;
 }
