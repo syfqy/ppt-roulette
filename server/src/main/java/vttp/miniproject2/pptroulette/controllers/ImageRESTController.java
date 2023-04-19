@@ -31,7 +31,6 @@ public class ImageRESTController {
   public ResponseEntity<List<Image>> getImagesByUser(
     @PathVariable String userId
   ) {
-    // TODO: require auth
     System.out.println(">>> getting images for user " + userId);
 
     List<Image> images = imageService.getImagesByUser(userId);

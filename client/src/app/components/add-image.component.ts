@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./add-image.component.css'],
 })
 export class AddImageComponent implements OnInit {
+  // ! TODO: move to before start game
   form!: FormGroup;
   searchResults!: string[];
   username!: string;
@@ -23,7 +24,7 @@ export class AddImageComponent implements OnInit {
     // TODO: cache search results on local storage
     this.form = this.createForm();
 
-    // TODO: get username
+    // TODO: remove username
     this.username = 'user1';
   }
 

@@ -44,7 +44,6 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
 
   constructor(
     private rxStompService: RxStompService,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private playerService: PlayerService
   ) {}

@@ -29,7 +29,10 @@ public class GameService {
   private GameCache gameCache;
 
   @Autowired
-  private GameResultRepository scoreRepo;
+  private GameResultRepository gameResultRepo;
+
+  @Autowired
+  private EmailService emailService;
 
   public Optional<Game> createGame(String gameId) {
     Lobby lobby = lobbyService.getLobby(gameId);
@@ -63,6 +66,14 @@ public class GameService {
   }
 
   public boolean insertGameResult(GameResult gameResult) {
-    return scoreRepo.insertGameResult(gameResult);
+    return gameResultRepo.insertGameResult(gameResult);
+  }
+
+  public void emailGameResult(String gameId, String email) {
+    // retrieve game result
+    GameResult gameResult = gameResultRepo.getGameResult(gameId);
+
+    // send game result to user's email
+    emailService.sendGameResult(email, gameResult);
   }
 }

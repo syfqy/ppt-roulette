@@ -22,4 +22,14 @@ export class GameService {
       this.httpClient.post(`/api/game/save/${gameResult.gameId}`, gameResult)
     );
   }
+
+  emailGameResult(gameId: string, email: string) {
+    const body = {
+      email: email,
+    };
+
+    return lastValueFrom(
+      this.httpClient.post(`/api/game/email/${gameId}`, body)
+    );
+  }
 }
