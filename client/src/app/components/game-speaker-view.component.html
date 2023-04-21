@@ -1,15 +1,37 @@
-<mat-progress-spinner
-  color="primary"
-  mode="determinate"
-  [value]="(timeElapsed / game.timePerSlide) * 100"
->
-</mat-progress-spinner>
-<p>Time left: {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}</p>
-<p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
-<h2>Score: {{ totalScore }}</h2>
+<div class="speaker-main">
+  <div class="speaker-header">
+    <h2>Topic: {{ game.deckMaterials.topic.topicText }}</h2>
+    <h2>Score: {{ totalScore }}</h2>
+  </div>
 
-<app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
+  <app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
 
+  <div class="speaker-footer">
+    <div class="timer">
+      <p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
+
+      <p>
+        Next slide in...
+        {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}
+      </p>
+    </div>
+
+    <mat-progress-spinner
+      color="primary"
+      mode="determinate"
+      [value]="(timeElapsed / game.timePerSlide) * 100"
+    >
+    </mat-progress-spinner>
+  </div>
+
+  <div class="reaction-list">
+    <!-- TODO: Add fade animation to reactions -->
+    <!-- TODO: Only show n most recent reaction -->
+    <p *ngFor="let reaction of reactions">
+      {{ reaction.judgeName }} : {{ reaction.text }}
+    </p>
+  </div>
+</div>
 <!-- projectable templates -->
 
 <ng-template #topicTemplate>
@@ -22,11 +44,3 @@
   <img style="max-width: 480px" [src]="currSlide.getContent()" />
 </ng-template>
 <!-- TODO: Add end slide -->
-
-<div class="reaction-list">
-  <!-- TODO: Add fade animation to reactions -->
-  <!-- TODO: Only show n most recent reaction -->
-  <p *ngFor="let reaction of reactions">
-    {{ reaction.judgeName }} : {{ reaction.text }}
-  </p>
-</div>

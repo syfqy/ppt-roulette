@@ -4,9 +4,10 @@
     <h1 [routerLink]="['/']">PPT Roulette</h1>
     <span class="menu-spacer"></span>
     <div class="navbar-items">
-      <a mat-button [routerLink]="['login']">Login</a>
-      <a mat-button [routerLink]="['images', 'all']">Manage Images</a>
+      <a mat-button [routerLink]="['login']">High Scores</a>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
-<router-outlet></router-outlet>
+<div class="main" [ngClass]="{ 'bg-img': showBackgroundImage }">
+  <router-outlet></router-outlet>
+</div>
