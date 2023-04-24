@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Game } from '../models/game.model';
@@ -30,6 +30,14 @@ export class GameService {
 
     return lastValueFrom(
       this.httpClient.post(`/api/game/email/${gameId}`, body)
+    );
+  }
+
+  getHighScores(): Promise<GameResult[]> {
+    const params = new HttpParams().set('limit', 10).set('offset', 0);
+
+    return lastValueFrom(
+      this.httpClient.get<GameResult[]>(`/api/scores`, { params: params })
     );
   }
 }

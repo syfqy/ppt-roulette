@@ -2,10 +2,11 @@ package vttp.miniproject2.pptroulette.repositories;
 
 import static vttp.miniproject2.pptroulette.repositories.Queries.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-// import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import vttp.miniproject2.pptroulette.models.GameResult;
 
@@ -35,11 +36,24 @@ public class GameResultRepository {
     );
 
     rs.next();
-    // if (!rs.next()) return Optional.empty();
-    // Customer customer = customerFromRs(rs);
-    // return Optional.of(customer);
 
     GameResult gameResult = GameResult.fromRs(rs);
     return gameResult;
+  }
+
+  public List<GameResult> getGameResults(Integer limit, Integer offset) {
+    final SqlRowSet rs = jdbcTemplate.queryForRowSet(
+      SQL_SELECT_TOP_GAME_RESULTS,
+      limit,
+      offset
+    );
+
+    List<GameResult> gameResults = new LinkedList<>();
+
+    while (rs.next()) {
+      gameResults.add(GameResult.fromRs(rs));
+    }
+
+    return gameResults;
   }
 }

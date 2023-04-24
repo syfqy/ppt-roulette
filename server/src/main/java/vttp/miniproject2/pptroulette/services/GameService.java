@@ -76,4 +76,8 @@ public class GameService {
     // send game result to user's email
     emailService.sendGameResult(email, gameResult);
   }
+
+  public List<GameResult> getHighScores(Integer limit, Integer offset) {
+    return gameResultRepo.getGameResults(limit, offset);
+  }
 }

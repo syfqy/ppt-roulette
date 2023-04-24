@@ -1,34 +1,34 @@
 <div class="speaker-main">
-  <!-- TODO: increase gap between h2 -->
-  <div class="speaker-header" *ngIf="currSlideIdx > 1">
-    <h2>Topic: {{ game.deckMaterials.topic.topicText }}</h2>
-    <h2>Score: {{ totalScore }}</h2>
-  </div>
-
-  <app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
-
-  <div class="speaker-footer">
-    <div class="timer">
-      <p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
-
-      <p>
-        Next slide in...
-        {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}
-      </p>
+  <div class="speaker-slide">
+    <div class="speaker-header" *ngIf="currSlideIdx > 1">
+      <h2>Topic: {{ game.deckMaterials.topic.topicText }}</h2>
+      <h2>Score: {{ totalScore }}</h2>
     </div>
 
-    <mat-progress-spinner
-      color="primary"
-      mode="determinate"
-      [value]="(timeElapsed / game.timePerSlide) * 100"
-    >
-    </mat-progress-spinner>
+    <app-game-slide [slideTemplate]="currTemplate"></app-game-slide>
+
+    <div class="speaker-footer">
+      <div class="timer">
+        <p>Slide: {{ currSlideIdx + 1 }} / {{ numSlides }}</p>
+
+        <p>
+          Next slide in...
+          {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}
+        </p>
+      </div>
+
+      <mat-progress-spinner
+        color="primary"
+        mode="determinate"
+        [value]="(timeElapsed / game.timePerSlide) * 100"
+      >
+      </mat-progress-spinner>
+    </div>
   </div>
 
   <div class="reaction-list">
-    <!-- TODO: Add fade animation to reactions -->
     <!-- TODO: Only show n most recent reaction -->
-    <p *ngFor="let reaction of reactions">
+    <p *ngFor="let reaction of reactions.slice(5)">
       {{ reaction.judgeName }} : {{ reaction.text }}
     </p>
   </div>

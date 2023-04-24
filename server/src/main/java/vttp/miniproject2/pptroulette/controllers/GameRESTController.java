@@ -6,6 +6,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vttp.miniproject2.pptroulette.models.Game;
 import vttp.miniproject2.pptroulette.models.GameResult;
 import vttp.miniproject2.pptroulette.models.Player;
-import vttp.miniproject2.pptroulette.services.EmailService;
 import vttp.miniproject2.pptroulette.services.GameService;
 import vttp.miniproject2.pptroulette.services.LobbyService;
 
@@ -116,6 +117,17 @@ public class GameRESTController {
     System.out.println(">>> Sending game result to : " + email);
 
     gameService.emailGameResult(gameId, email);
+    // TODO: return non-null response
     return ResponseEntity.ok().body(null);
+  }
+
+  @GetMapping(path = "scores")
+  public ResponseEntity<List<GameResult>> getHighScores(
+    @RequestParam Integer limit,
+    @RequestParam Integer offset
+  ) {
+    List<GameResult> highScores = gameService.getHighScores(limit, offset);
+
+    return ResponseEntity.ok().body(highScores);
   }
 }

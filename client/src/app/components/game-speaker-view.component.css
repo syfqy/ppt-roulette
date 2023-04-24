@@ -6,3 +6,8 @@
 .speaker-header {
     gap: 1.5rem;
 }
+
+.speaker-main {
+    display: flex;
+    gap: 2rem;
+}

@@ -14,4 +14,13 @@ public class Queries {
         FROM game_results
         WHERE game_id = ?
         """;
+
+  public static final String SQL_SELECT_TOP_GAME_RESULTS =
+    """
+        SELECT *
+        FROM game_results
+        ORDER BY score DESC
+        LIMIT ?
+        OFFSET ?
+            """;
 }
