@@ -18,7 +18,7 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
 
   imageOptions!: Image[];
   imageSelected!: Image;
-  imageConfirmed: boolean = false;
+  isImageConfirmed: boolean = false;
 
   imageOptionsTopic: string = '/topic/imageOptions';
   imageSelectedDestination: string = '/game/imageSelected';
@@ -50,7 +50,7 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
         console.log('>>> received image options from speaker');
         console.log(JSON.parse(message.body));
         this.imageOptions = JSON.parse(message.body) as Image[];
-        this.imageConfirmed = false;
+        this.isImageConfirmed = false;
         this.imageSelected = {} as Image;
       });
   }
@@ -65,7 +65,7 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
       destination: this.imageSelectedDestination,
       body: JSON.stringify(this.imageSelected),
     });
-    this.imageConfirmed = true;
+    this.isImageConfirmed = true;
   }
 
   ngOnDestroy() {

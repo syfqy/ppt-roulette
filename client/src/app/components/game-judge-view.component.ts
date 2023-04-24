@@ -15,6 +15,7 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
   gameId!: string;
   judge!: Player;
 
+  // TODO: move to separate model
   REACTION_OPTIONS = {
     LAUGH: {
       judgeName: '',
@@ -37,6 +38,13 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
       score: 7,
     },
   };
+
+  reactionOptions = [
+    this.REACTION_OPTIONS.LAUGH,
+    this.REACTION_OPTIONS.POOP,
+    this.REACTION_OPTIONS.CLAP,
+    this.REACTION_OPTIONS.MINDBLOWN,
+  ];
 
   reactionsDestination: string = '/game/reactions';
 

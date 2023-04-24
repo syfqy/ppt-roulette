@@ -21,6 +21,7 @@ import { ManageImagesComponent } from './components/manage-images.component';
 import { ImageListComponent } from './components/image-list.component';
 import { AddImageComponent } from './components/add-image.component';
 import { GameOverComponent } from './components/game-over.component';
+import { HighScoresComponent } from './components/high-scores.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { GameOverComponent } from './components/game-over.component';
     ImageListComponent,
     AddImageComponent,
     GameOverComponent,
+    HighScoresComponent,
   ],
   imports: [
     BrowserModule,

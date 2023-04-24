@@ -20,7 +20,6 @@ public class EmailService {
     message.setTo(email);
     message.setSubject("PPT Roulette game result");
     message.setText(body);
-    message.setFrom("syafiq.ysf@gmail.com");
 
     mailSender.send(message);
     System.out.println(">>> Game result sent to: " + email);

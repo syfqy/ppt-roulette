@@ -7,12 +7,20 @@ import { Image } from '../models/image.model';
   providedIn: 'root',
 })
 export class ImageService {
+  private email!: string;
+
   constructor(private httpClient: HttpClient) {}
 
-  getImagesByUser(username: string): Promise<Image[]> {
-    return lastValueFrom(
-      this.httpClient.get<Image[]>(`/api/image/${username}`)
-    );
+  getEmail() {
+    return this.email;
+  }
+
+  setEmail(email: string) {
+    this.email = email;
+  }
+
+  getImagesByUser(email: string): Promise<Image[]> {
+    return lastValueFrom(this.httpClient.get<Image[]>(`/api/image/${email}`));
   }
 
   searchImages(query: string): Promise<string[]> {

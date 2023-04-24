@@ -1,5 +1,6 @@
 <div class="speaker-main">
-  <div class="speaker-header">
+  <!-- TODO: increase gap between h2 -->
+  <div class="speaker-header" *ngIf="currSlideIdx > 1">
     <h2>Topic: {{ game.deckMaterials.topic.topicText }}</h2>
     <h2>Score: {{ totalScore }}</h2>
   </div>
@@ -43,4 +44,4 @@
 <ng-template #imageTemplate>
   <img style="max-width: 480px" [src]="currSlide.getContent()" />
 </ng-template>
-<!-- TODO: Add end slide -->
+<!-- TODO: Add intro and end slides -->

@@ -11,10 +11,10 @@ import { JoinGameComponent } from './components/join-game.component';
 import { LobbyComponent } from './components/lobby.component';
 import { ManageImagesComponent } from './components/manage-images.component';
 import { GameOverComponent } from './components/game-over.component';
+import { HighScoresComponent } from './components/high-scores.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'login', component: ManageImagesComponent },
   {
     path: 'images',
     component: ManageImagesComponent,
@@ -29,6 +29,7 @@ const routes: Routes = [
       },
     ],
   },
+  { path: 'high-scores', component: HighScoresComponent },
   { path: 'game/create', component: CreateGameComponent },
   { path: 'game/join', component: JoinGameComponent },
   { path: 'lobby/:gameId', component: LobbyComponent },

@@ -4,15 +4,16 @@
   <img
     *ngFor="let image of imageOptions"
     [ngClass]="{
-      'apply-hover': !imageConfirmed,
-      'can-select': !imageConfirmed
+      'apply-hover': !isImageConfirmed,
+      'can-select': !isImageConfirmed,
+      'is-selected': imageSelected === image
     }"
     [src]="image.imageUrl"
     (click)="selectImage(image)"
   />
   <button
     mat-raised-button
-    [disabled]="!imageSelected || imageConfirmed"
+    [disabled]="!imageSelected || isImageConfirmed"
     (click)="notifyImageSelected()"
     color="primary"
   >
