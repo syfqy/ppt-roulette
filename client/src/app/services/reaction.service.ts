@@ -17,4 +17,8 @@ export class ReactionService {
   addReaction(reaction: Reaction) {
     this.reactions = [...this.reactions, reaction];
   }
+
+  clearReactions() {
+    this.reactions = [];
+  }
 }

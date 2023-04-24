@@ -65,6 +65,10 @@ public class GameService {
     return gameCache.isGameCreated(gameId);
   }
 
+  public boolean endGame(String gameId) {
+    return gameCache.endGame(gameId);
+  }
+
   public boolean insertGameResult(GameResult gameResult) {
     return gameResultRepo.insertGameResult(gameResult);
   }

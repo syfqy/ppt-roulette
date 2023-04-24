@@ -56,6 +56,14 @@ public class GameController {
     return gameService.isGameCreated(gameId);
   }
 
+  @MessageMapping("/end/{gameId}")
+  @SendTo("/topic/end/{gameId}")
+  public boolean sendEndGame(@DestinationVariable String gameId) {
+    // return game
+    System.out.println(">>> Host has ended game " + gameId);
+    return gameService.endGame(gameId);
+  }
+
   @MessageMapping("/imageOptions/{gameId}")
   @SendTo("/topic/imageOptions/{gameId}")
   public List<Image> sendImageOptions(

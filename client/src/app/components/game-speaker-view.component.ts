@@ -49,6 +49,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   imageSelectedTopic: string = '/topic/imageSelected';
 
   imageOptionsDestination: string = '/game/imageOptions';
+  endDestination: string = '/game/end';
 
   nextSlideSub$!: Subscription;
   reactionsTopicSub$!: Subscription;
@@ -84,6 +85,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
     this.reactionsTopic = `${this.reactionsTopic}/${this.game.gameId}`;
     this.imageOptionsDestination = `${this.imageOptionsDestination}/${this.game.gameId}`;
+    this.endDestination = `${this.endDestination}/${this.game.gameId}`;
 
     // create deck from deck materials
     this.deck = Deck.createFromDeckMaterials(
@@ -103,11 +105,15 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
       this.timeForCurrSlide = this.currSlide.timeForSlide;
 
       // notify assistant of image options
-      if (this.currSlide.getType().toLowerCase() !== 'image') {
-        const i = Math.floor(this.currSlideIdx / 2);
-        console.log('>>> image options prepared');
-        console.log(this.deck.imageSelectionArrs[i]);
-        this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
+      if (this.currSlideIdx + 1 < this.numSlides) {
+        const nextSlide = this.deck.getSlideByIdx(this.currSlideIdx + 1);
+
+        if (nextSlide.getType().toLowerCase() === 'image') {
+          const i = Math.floor(this.currSlideIdx / 2);
+          console.log('>>> image options prepared');
+          console.log(this.deck.imageSelectionArrs[i]);
+          this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
+        }
       }
     });
 
@@ -182,17 +188,24 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  notifyEndGame() {
+    this.rxStompService.publish({
+      destination: this.endDestination,
+    });
+  }
+
   endGame(): void {
-    // close game
     // save score
     const gameResult = this.createGameResult();
     this.gameService
       .saveGameResult(gameResult)
       .then((res) => {
         console.log(res);
+        // close game
+        this.notifyEndGame();
 
         // navigate to game over view
-        this.router.navigate(['/game-over', this.game.gameId]);
+        this.router.navigate(['/game-over', this.game.gameId, 'speaker']);
       })
       .catch((err) => {
         console.error(err);

@@ -20,3 +20,7 @@
     font-size: 2rem;
     min-width: 20%;
 }
+
+img {
+    max-height: 540px;
+}

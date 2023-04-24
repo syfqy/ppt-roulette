@@ -10,8 +10,10 @@ import { ImageListComponent } from './components/image-list.component';
 import { JoinGameComponent } from './components/join-game.component';
 import { LobbyComponent } from './components/lobby.component';
 import { ManageImagesComponent } from './components/manage-images.component';
-import { GameOverComponent } from './components/game-over.component';
+import { GameOverSpeakerViewComponent } from './components/game-over-speaker-view.component';
 import { HighScoresComponent } from './components/high-scores.component';
+import { GameOverAssistantViewComponent } from './components/game-over-assistant-view.component';
+import { GameOverJudgeViewComponent } from './components/game-over-judge-view.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -36,7 +38,15 @@ const routes: Routes = [
   { path: 'game/:gameId', component: GameSpeakerViewComponent },
   { path: 'game/:gameId/assistant', component: GameAssistantViewComponent },
   { path: 'game/:gameId/judge', component: GameJudgeViewComponent },
-  { path: 'game-over/:gameId', component: GameOverComponent },
+  {
+    path: 'game-over/:gameId/speaker',
+    component: GameOverSpeakerViewComponent,
+  },
+  {
+    path: 'game-over/:gameId/assistant',
+    component: GameOverAssistantViewComponent,
+  },
+  { path: 'game-over/:gameId/judge', component: GameOverJudgeViewComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

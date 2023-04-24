@@ -3,13 +3,14 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService } from '../services/game.service';
 import { Subscription } from 'rxjs';
+import { PlayerService } from '../services/player.service';
 
 @Component({
-  selector: 'app-game-over',
-  templateUrl: './game-over.component.html',
-  styleUrls: ['./game-over.component.css'],
+  selector: 'app-game-over-speaker-view',
+  templateUrl: './game-over-speaker-view.component.html',
+  styleUrls: ['./game-over-speaker-view.component.css'],
 })
-export class GameOverComponent implements OnInit, OnDestroy {
+export class GameOverSpeakerViewComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   routeSub$!: Subscription;
   gameId!: string;

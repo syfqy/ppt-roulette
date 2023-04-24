@@ -20,10 +20,12 @@ import { GameSlideComponent } from './components/game-slide.component';
 import { ManageImagesComponent } from './components/manage-images.component';
 import { ImageListComponent } from './components/image-list.component';
 import { AddImageComponent } from './components/add-image.component';
-import { GameOverComponent } from './components/game-over.component';
+import { GameOverSpeakerViewComponent } from './components/game-over-speaker-view.component';
 import { HighScoresComponent } from './components/high-scores.component';
 import { GameAssistantOptionsComponent } from './components/game-assistant-options.component';
 import { FormsModule } from '@angular/forms';
+import { GameOverAssistantViewComponent } from './components/game-over-assistant-view.component';
+import { GameOverJudgeViewComponent } from './components/game-over-judge-view.component';
 
 @NgModule({
   declarations: [
@@ -39,9 +41,11 @@ import { FormsModule } from '@angular/forms';
     ManageImagesComponent,
     ImageListComponent,
     AddImageComponent,
-    GameOverComponent,
+    GameOverSpeakerViewComponent,
     HighScoresComponent,
     GameAssistantOptionsComponent,
+    GameOverAssistantViewComponent,
+    GameOverJudgeViewComponent,
   ],
   imports: [
     BrowserModule,

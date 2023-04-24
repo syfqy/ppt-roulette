@@ -54,4 +54,8 @@ public class GameCache {
   public boolean isGameCreated(String gameId) {
     return redisTemplate.opsForSet().isMember(GAME_SET_KEY, gameId);
   }
+
+  public boolean endGame(String gameId) {
+    return redisTemplate.opsForSet().remove(GAME_SET_KEY, gameId) > 0;
+  }
 }

@@ -21,15 +21,18 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
   isImageConfirmed: boolean = false;
 
   imageOptionsTopic: string = '/topic/imageOptions';
+  endTopic: string = '/topic/end';
   imageSelectedDestination: string = '/game/imageSelected';
 
   routeSub$!: Subscription;
   imageOptionsSub$!: Subscription;
+  endGameSub$!: Subscription;
 
   constructor(
     private playerService: PlayerService,
     private activatedRoute: ActivatedRoute,
-    private rxStompService: RxStompService
+    private rxStompService: RxStompService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +43,7 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
       this.gameId = params['gameId'];
       this.imageOptionsTopic = `${this.imageOptionsTopic}/${this.gameId}`;
+      this.endTopic = `${this.endTopic}/${this.gameId}`;
       this.imageSelectedDestination = `${this.imageSelectedDestination}/${this.gameId}`;
     });
 
@@ -52,6 +56,14 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
         this.imageOptions = JSON.parse(message.body) as Image[];
         this.isImageConfirmed = false;
         this.imageSelected = {} as Image;
+      });
+
+    // subscribe to end game notification
+    this.endGameSub$ = this.rxStompService
+      .watch(this.endTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> speaker has ended game');
+        this.router.navigate(['/']);
       });
   }
 
@@ -71,5 +83,6 @@ export class GameAssistantViewComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.routeSub$.unsubscribe();
     this.imageOptionsSub$.unsubscribe();
+    this.endGameSub$.unsubscribe();
   }
 }
