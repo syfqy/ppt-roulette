@@ -1,4 +1,4 @@
 export const environment = {
-  wsEndpoint: 'https://available-cherries-production-abf6.up.railway.app/ws',
+  wsEndpoint: 'https://available-cherries-production.up.railway.app/ws',
   production: true,
 };
