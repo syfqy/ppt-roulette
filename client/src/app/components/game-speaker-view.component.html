@@ -13,14 +13,14 @@
 
         <p>
           Next slide in...
-          {{ game.timePerSlide - timeElapsed | number : "1.0-0" }}
+          {{ timeForCurrSlide - timeElapsed | number : "1.0-0" }}
         </p>
       </div>
 
       <mat-progress-spinner
         color="primary"
         mode="determinate"
-        [value]="(timeElapsed / game.timePerSlide) * 100"
+        [value]="(timeElapsed / timeForCurrSlide) * 100"
       >
       </mat-progress-spinner>
     </div>

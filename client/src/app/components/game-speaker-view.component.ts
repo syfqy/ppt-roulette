@@ -78,7 +78,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
     // get game
     this.game = this.gameStateService.getGame();
-    this.timeForCurrSlide = this.game.timePerSlide;
+    this.timeForCurrSlide = 3;
 
     // set up topics and destinations
     this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
@@ -87,7 +87,8 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
     // create deck from deck materials
     this.deck = Deck.createFromDeckMaterials(
-      this.game.deckMaterials as DeckMaterials
+      this.game.deckMaterials as DeckMaterials,
+      this.speaker.name
     );
     this.numSlides = this.deck.slides.length;
     console.log('>>> deck prepared');
@@ -99,6 +100,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
       this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
       this.currTemplate = this.changeTemplate(this.currSlide);
+      this.timeForCurrSlide = this.currSlide.timeForSlide;
 
       // notify assistant of image options
       if (this.currSlide.getType().toLowerCase() !== 'image') {
@@ -147,9 +149,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
           this.nextSlideEvent.next();
 
           // TODO: create clean up function to call when next slide
-          this.timeForCurrSlide = this.game.timePerSlide;
           this.timeElapsed = 0;
-          this.reactions = [];
         } else {
           clearInterval(timer);
           this.endGame();

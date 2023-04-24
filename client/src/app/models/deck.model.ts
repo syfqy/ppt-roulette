@@ -13,7 +13,10 @@ export class Deck {
     this.imageSelectionArrs = imageSelectionArrs;
   }
 
-  static createFromDeckMaterials(deckMaterials: DeckMaterials): Deck {
+  static createFromDeckMaterials(
+    deckMaterials: DeckMaterials,
+    speakerName: string
+  ): Deck {
     const slides: Slide[] = [];
     const imageSelectionArrs: Image[][] = [];
 
@@ -45,7 +48,18 @@ export class Deck {
       }
     }
 
-    return new Deck(slides, deckMaterials.imageLists);
+    // add intro and end slides
+    const introSlide = this.createPrompt(
+      '0',
+      `My name is ${speakerName}, and today I would like to talk to you about...`
+    );
+
+    const endSlide = this.createPrompt('1', 'Thank you');
+
+    return new Deck(
+      [introSlide, ...slides, endSlide],
+      deckMaterials.imageLists
+    );
   }
 
   static createTopic(topicId: string, topicText: string): Topic {
