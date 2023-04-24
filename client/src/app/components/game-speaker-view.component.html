@@ -28,7 +28,7 @@
 
   <div class="reaction-list">
     <!-- TODO: Only show n most recent reaction -->
-    <p *ngFor="let reaction of reactions.slice(5)">
+    <p class="reaction" *ngFor="let reaction of reactions.slice(-5)">
       {{ reaction.judgeName }} : {{ reaction.text }}
     </p>
   </div>

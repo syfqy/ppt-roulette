@@ -47,7 +47,7 @@ public class GameService {
     // create deck
     Topic topic = deckMaterialsRepo.getRandomTopic();
     List<Prompt> prompts = deckMaterialsRepo.getRandomPrompts(2);
-    List<Image> images = deckMaterialsRepo.getRandomImages(9);
+    List<Image> images = deckMaterialsRepo.getRandomGameImages(9);
     List<List<Image>> imageLists = Lists.partition(images, 3);
 
     DeckMaterials deckMaterials = new DeckMaterials();
