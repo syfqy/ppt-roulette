@@ -1,13 +1,16 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
+<mat-toolbar color="primary" class="navbar">
+  <mat-toolbar-row class="navbar-items">
     <h1 [routerLink]="['/']">PPT Roulette</h1>
-    <span class="menu-spacer"></span>
-    <div class="navbar-items">
-      <a mat-button [routerLink]="['high-scores']">High Scores</a>
-      <a mat-button [routerLink]="['images', 'all']">Manage Images</a>
-    </div>
+    <a mat-button [routerLink]="['high-scores']">High Scores</a>
+    <a mat-button [routerLink]="['images', 'all']">Manage Images</a>
   </mat-toolbar-row>
 </mat-toolbar>
-<div class="main" [ngClass]="{ 'bg-img': showBackgroundImage }">
+<div
+  class="main"
+  [ngClass]="{
+    'bg-img': showBackgroundImage,
+    'align-top': alignTop
+  }"
+>
   <router-outlet></router-outlet>
 </div>

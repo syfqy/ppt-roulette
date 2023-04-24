@@ -19,12 +19,18 @@ export class ImageService {
     this.email = email;
   }
 
+  getImageCountByUser(email: string): Promise<number> {
+    return lastValueFrom(
+      this.httpClient.get<number>(`/api/image/count/${email}`)
+    );
+  }
+
   getImagesByUser(email: string): Promise<Image[]> {
     return lastValueFrom(this.httpClient.get<Image[]>(`/api/image/${email}`));
   }
 
   searchImages(query: string): Promise<string[]> {
-    const params = new HttpParams().set('query', query);
+    const params = new HttpParams().set('query', query).set('limit', 10);
 
     return lastValueFrom(
       this.httpClient.get<string[]>('/api/image/search', {
@@ -33,10 +39,10 @@ export class ImageService {
     );
   }
 
-  saveImage(pexelsImageUrl: string, username: string) {
+  saveImage(pexelsImageUrl: string, email: string) {
     const body = {
       imageUrl: pexelsImageUrl,
-      username: username,
+      username: email,
     };
 
     return lastValueFrom(this.httpClient.post('/api/image/save', body));

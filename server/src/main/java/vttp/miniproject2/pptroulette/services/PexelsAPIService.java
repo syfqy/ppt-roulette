@@ -23,10 +23,11 @@ public class PexelsAPIService {
   @Value("${PEXELS_BASE_URL}")
   private String BASE_URL;
 
-  public List<String> searchImages(String query) {
+  public List<String> searchImages(String query, Integer limit) {
     final String url = UriComponentsBuilder
       .fromUriString(BASE_URL)
       .queryParam("query", query)
+      .queryParam("per_page", limit)
       .toUriString();
 
     RequestEntity req = RequestEntity

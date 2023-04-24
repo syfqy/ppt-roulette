@@ -17,6 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'client';
   showBackgroundImage = true;
   routeSub$!: Subscription;
+  alignTop: boolean = false;
 
   constructor(private router: Router) {}
 
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const url = e.url.toString().toLowerCase();
         this.showBackgroundImage =
           url.includes('create') || url.includes('join') || url === '/';
+        this.alignTop = url.includes('high-scores') || url.includes('images');
       }
     });
   }

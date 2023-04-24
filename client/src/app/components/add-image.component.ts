@@ -9,10 +9,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./add-image.component.css'],
 })
 export class AddImageComponent implements OnInit {
-  // ! TODO: move to before start game
   form!: FormGroup;
   searchResults!: string[];
-  username!: string;
+  email!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -21,11 +20,8 @@ export class AddImageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // TODO: cache search results on local storage
+    this.email = this.imageService.getEmail();
     this.form = this.createForm();
-
-    // TODO: remove username
-    this.username = 'user1';
   }
 
   createForm(): FormGroup {
@@ -47,7 +43,7 @@ export class AddImageComponent implements OnInit {
 
   saveImage(resultImageUrl: string) {
     this.imageService
-      .saveImage(resultImageUrl, this.username)
+      .saveImage(resultImageUrl, this.email)
       .then(() => {
         this.router.navigate(['images', 'all']);
       })

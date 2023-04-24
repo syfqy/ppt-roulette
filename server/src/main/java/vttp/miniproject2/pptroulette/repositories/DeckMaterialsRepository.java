@@ -23,6 +23,16 @@ public class DeckMaterialsRepository {
   private static final String PROMPT_COLLECTION = "prompts";
   private static final String IMAGE_COLLECTION = "images";
 
+  public List<Image> getImagesByUser(String username) {
+    Query q = new Query(Criteria.where("username").is(username));
+    return mongoTemplate.find(q, Image.class, IMAGE_COLLECTION);
+  }
+
+  public Integer getImageCountByUser(String username) {
+    Query q = new Query(Criteria.where("username").is(username));
+    return (int) mongoTemplate.count(q, IMAGE_COLLECTION);
+  }
+
   public Topic getRandomTopic() {
     List<Topic> results = getNRandomItems(1, Topic.class, TOPIC_COLLECTION);
     return results.get(0);
@@ -34,11 +44,6 @@ public class DeckMaterialsRepository {
 
   public List<Image> getRandomImages(Integer numImages) {
     return getNRandomItems(numImages, Image.class, IMAGE_COLLECTION);
-  }
-
-  public List<Image> getImagesByUser(String username) {
-    Query q = new Query(Criteria.where("username").is(username));
-    return mongoTemplate.find(q, Image.class, IMAGE_COLLECTION);
   }
 
   public Image insertImage(Image image) {

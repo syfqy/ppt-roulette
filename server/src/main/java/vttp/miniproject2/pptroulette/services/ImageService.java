@@ -19,8 +19,12 @@ public class ImageService {
     return deckMaterialsRepo.getImagesByUser(userId);
   }
 
-  public List<String> searchImages(String query) {
-    return pexelsAPIService.searchImages(query);
+  public Integer getImageCountByUser(String email) {
+    return deckMaterialsRepo.getImageCountByUser(email);
+  }
+
+  public List<String> searchImages(String query, Integer limit) {
+    return pexelsAPIService.searchImages(query, limit);
   }
 
   public boolean saveImage(Image image) {

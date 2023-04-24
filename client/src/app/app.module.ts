@@ -22,6 +22,8 @@ import { ImageListComponent } from './components/image-list.component';
 import { AddImageComponent } from './components/add-image.component';
 import { GameOverComponent } from './components/game-over.component';
 import { HighScoresComponent } from './components/high-scores.component';
+import { GameAssistantOptionsComponent } from './components/game-assistant-options.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,7 @@ import { HighScoresComponent } from './components/high-scores.component';
     AddImageComponent,
     GameOverComponent,
     HighScoresComponent,
+    GameAssistantOptionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +50,7 @@ import { HighScoresComponent } from './components/high-scores.component';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FormsModule,
   ],
   providers: [
     {

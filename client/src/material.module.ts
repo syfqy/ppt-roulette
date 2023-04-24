@@ -14,6 +14,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const materialModule: any[] = [
   MatToolbarModule,
@@ -30,6 +32,8 @@ const materialModule: any[] = [
   MatListModule,
   MatDividerModule,
   MatTabsModule,
+  MatRadioModule,
+  MatDialogModule,
 ];
 
 @NgModule({

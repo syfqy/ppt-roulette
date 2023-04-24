@@ -18,6 +18,7 @@ export class ImageListComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.createForm();
     this.email = this.imageService.getEmail();
+    this.getImages(this.email);
   }
 
   createForm(): FormGroup {
