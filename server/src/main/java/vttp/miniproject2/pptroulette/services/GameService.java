@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vttp.miniproject2.pptroulette.models.DeckMaterials;
 import vttp.miniproject2.pptroulette.models.Game;
+import vttp.miniproject2.pptroulette.models.GameResult;
 import vttp.miniproject2.pptroulette.models.Image;
 import vttp.miniproject2.pptroulette.models.Lobby;
 import vttp.miniproject2.pptroulette.models.Prompt;
 import vttp.miniproject2.pptroulette.models.Topic;
 import vttp.miniproject2.pptroulette.repositories.DeckMaterialsRepository;
 import vttp.miniproject2.pptroulette.repositories.GameCache;
-import vttp.miniproject2.pptroulette.repositories.ScoreRepository;
+import vttp.miniproject2.pptroulette.repositories.GameResultRepository;
 
 @Service
 public class GameService {
@@ -28,7 +29,10 @@ public class GameService {
   private GameCache gameCache;
 
   @Autowired
-  private ScoreRepository scoreRepo;
+  private GameResultRepository gameResultRepo;
+
+  @Autowired
+  private EmailService emailService;
 
   public Optional<Game> createGame(String gameId) {
     Lobby lobby = lobbyService.getLobby(gameId);
@@ -43,7 +47,7 @@ public class GameService {
     // create deck
     Topic topic = deckMaterialsRepo.getRandomTopic();
     List<Prompt> prompts = deckMaterialsRepo.getRandomPrompts(2);
-    List<Image> images = deckMaterialsRepo.getRandomImages(9);
+    List<Image> images = deckMaterialsRepo.getRandomGameImages(9);
     List<List<Image>> imageLists = Lists.partition(images, 3);
 
     DeckMaterials deckMaterials = new DeckMaterials();
@@ -61,7 +65,23 @@ public class GameService {
     return gameCache.isGameCreated(gameId);
   }
 
-  public boolean insertScore(String playerName, Integer score) {
-    return scoreRepo.insertScore(playerName, score);
+  public boolean endGame(String gameId) {
+    return gameCache.endGame(gameId);
+  }
+
+  public boolean insertGameResult(GameResult gameResult) {
+    return gameResultRepo.insertGameResult(gameResult);
+  }
+
+  public void emailGameResult(String gameId, String email) {
+    // retrieve game result
+    GameResult gameResult = gameResultRepo.getGameResult(gameId);
+
+    // send game result to user's email
+    emailService.sendGameResult(email, gameResult);
+  }
+
+  public List<GameResult> getHighScores(Integer limit, Integer offset) {
+    return gameResultRepo.getGameResults(limit, offset);
   }
 }

@@ -27,22 +27,33 @@ public class ImageRESTController {
   @Autowired
   private ImageService imageService;
 
-  @GetMapping("/{userId}")
+  @GetMapping("/{email}")
   public ResponseEntity<List<Image>> getImagesByUser(
-    @PathVariable String userId
+    @PathVariable String email
   ) {
-    // TODO: require auth
-    System.out.println(">>> getting images for user " + userId);
+    System.out.println(">>> getting images for user " + email);
 
-    List<Image> images = imageService.getImagesByUser(userId);
+    List<Image> images = imageService.getImagesByUser(email);
     return ResponseEntity.ok(images);
   }
 
+  @GetMapping("/count/{email}")
+  public ResponseEntity<Integer> getImageCountByUser(
+    @PathVariable String email
+  ) {
+    System.out.println(">>> getting image counts for user " + email);
+
+    Integer nImages = imageService.getImageCountByUser(email);
+    return ResponseEntity.ok(nImages);
+  }
+
   @GetMapping("/search")
-  // TODO: implement search image
-  public List<String> searchImage(@RequestParam String query) {
+  public List<String> searchImage(
+    @RequestParam String query,
+    @RequestParam Integer limit
+  ) {
     System.out.println(">>> searching for images: " + query);
-    return imageService.searchImages(query);
+    return imageService.searchImages(query, limit);
   }
 
   @PostMapping("/save")

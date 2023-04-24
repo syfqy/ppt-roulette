@@ -5,6 +5,7 @@ import { Reaction } from '../models/reaction.model';
   providedIn: 'root',
 })
 export class ReactionService {
+  // TODO: consolidate in GameStateService
   private reactions: Reaction[] = [];
 
   constructor() {}
@@ -15,5 +16,9 @@ export class ReactionService {
 
   addReaction(reaction: Reaction) {
     this.reactions = [...this.reactions, reaction];
+  }
+
+  clearReactions() {
+    this.reactions = [];
   }
 }

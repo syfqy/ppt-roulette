@@ -1,4 +1,10 @@
-.navbar-items {
+.button-row {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 50%;
+}
+
+button {
+    font-size: 1.5rem;
 }

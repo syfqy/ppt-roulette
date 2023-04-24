@@ -3,6 +3,7 @@ import { Slide } from './slide.model';
 export class Prompt implements Slide {
   promptId: string;
   promptText: string;
+  timeForSlide: number = 10;
 
   constructor(promptId: string, promptText: string) {
     this.promptId = promptId;

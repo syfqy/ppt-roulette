@@ -1,4 +1,9 @@
-<form [formGroup]="form" (ngSubmit)="submitForm()">
+<form
+  *ngIf="!!email; else promptLogin"
+  form
+  [formGroup]="form"
+  (ngSubmit)="submitForm()"
+>
   <mat-form-field appearance="fill">
     <mat-label>Search</mat-label>
     <input matInput formControlName="query" />
@@ -7,7 +12,7 @@
   <button mat-raised-button [disabled]="form.invalid">Search</button>
 </form>
 
-<h3>Search Results:</h3>
+<h3 *ngIf="!!searchResults">Search Results:</h3>
 <mat-list>
   <mat-card *ngFor="let result of searchResults">
     <img [src]="result" alt="" />
@@ -16,3 +21,7 @@
     </button>
   </mat-card>
 </mat-list>
+
+<ng-template #promptLogin>
+  <h2>Enter your email in My Images tab first!</h2>
+</ng-template>

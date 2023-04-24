@@ -3,6 +3,7 @@ import { Slide } from './slide.model';
 export class Image implements Slide {
   imageId: string;
   imageUrl: string;
+  timeForSlide: number = 20;
 
   constructor(imageId: string, imageUrl: string) {
     this.imageId = imageId;

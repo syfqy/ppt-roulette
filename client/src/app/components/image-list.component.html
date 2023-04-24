@@ -1,4 +1,12 @@
-<h3>{{ username }}'s Images</h3>
+<form [formGroup]="form" class="form" (ngSubmit)="submitForm()">
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" />
+  </mat-form-field>
+
+  <button mat-raised-button [disabled]="form.invalid">Get My Images</button>
+</form>
+<h3 *ngIf="!!email">{{ email }}'s Images</h3>
 
 <mat-list>
   <mat-card *ngFor="let image of images">

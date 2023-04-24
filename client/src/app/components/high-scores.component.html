@@ -1,0 +1,16 @@
+<h2>High Scores</h2>
+
+<table>
+  <tr>
+    <td>Rank</td>
+    <td>Speaker</td>
+    <td>Assistant</td>
+    <td>Score</td>
+  </tr>
+  <tr *ngFor="let result of gameResults; let i = index">
+    <td>{{ i + 1 }}</td>
+    <td>{{ result.speakerName }}</td>
+    <td>{{ result.assistantName }}</td>
+    <td>{{ result.score }}</td>
+  </tr>
+</table>

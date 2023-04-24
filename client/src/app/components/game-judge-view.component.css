@@ -1,0 +1,23 @@
+.button-row {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.reaction-btn {
+    background-color: whitesmoke;
+    height: 64px;
+    width: 64px;
+    font-size: 3rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0px;
+}
+
+.reaction-btn:hover {
+    background-color: skyblue;
+    border: 1px solid darkslategrey;
+}
+
+.is-clicked {
+    background-color: #3f51b5 ;
+}

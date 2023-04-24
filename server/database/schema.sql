@@ -3,12 +3,12 @@ CREATE SCHEMA ppt_roulette;
 
 USE ppt_roulette;
 
-DROP TABLE IF EXISTS scores;
-CREATE TABLE scores (
-    player_name VARCHAR(32) NOT NULL,
+DROP TABLE IF EXISTS game_results;
+CREATE TABLE game_results (
     game_id VARCHAR(8) NOT NULL,
+    speaker_name VARCHAR(32) NOT NULL,
+    assistant_name VARCHAR(32) NOT NULL,
     score INTEGER NOT NULL,
 
-    PRIMARY KEY (player_name, game_id)
-)
-
+    PRIMARY KEY (game_id)
+);

@@ -13,6 +13,7 @@
   </ol>
 </div>
 
+<!-- host view -->
 <button
   *ngIf="currentPlayer.host && !!lobby"
   [disabled]="!lobby.canStartGame"
@@ -22,3 +23,8 @@
 >
   Start Game
 </button>
+
+<!-- assistant view -->
+<app-game-assistant-options
+  *ngIf="currentPlayer.role.toLowerCase() === 'assistant'"
+></app-game-assistant-options>

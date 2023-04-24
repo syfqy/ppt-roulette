@@ -1,26 +1,11 @@
 <h3>Judge: {{ this.judge.name }}</h3>
 
-<button
-  class="btn btn-primary"
-  (click)="notifyReaction(this.REACTION_OPTIONS.LAUGH)"
->
-  😂
-</button>
-<button
-  class="btn btn-primary"
-  (click)="notifyReaction(this.REACTION_OPTIONS.POOP)"
->
-  💩
-</button>
-<button
-  class="btn btn-primary"
-  (click)="notifyReaction(this.REACTION_OPTIONS.CLAP)"
->
-  👏
-</button>
-<button
-  class="btn btn-primary"
-  (click)="notifyReaction(this.REACTION_OPTIONS.MINDBLOWN)"
->
-  🤯
-</button>
+<div class="button-row">
+  <button
+    *ngFor="let reaction of reactionOptions"
+    class="reaction-btn"
+    (click)="notifyReaction(reaction)"
+  >
+    {{ reaction.text }}
+  </button>
+</div>

@@ -5,6 +5,9 @@ import { Player } from '../models/player.model';
 import { PlayerService } from '../services/player.service';
 import { RxStompService } from '../services/rx-stomp.service';
 import { Reaction } from '../models/reaction.model';
+import { REACTION_OPTIONS } from '../models/reaction-options.model';
+import { Message } from 'stompjs';
+import { ReactionService } from '../services/reaction.service';
 
 @Component({
   selector: 'app-game-judge-view',
@@ -15,38 +18,25 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
   gameId!: string;
   judge!: Player;
 
-  REACTION_OPTIONS = {
-    LAUGH: {
-      judgeName: '',
-      text: '😂',
-      score: 10,
-    },
-    POOP: {
-      judgeName: '',
-      text: '💩',
-      score: -10,
-    },
-    CLAP: {
-      judgeName: '',
-      text: '👏',
-      score: 3,
-    },
-    MINDBLOWN: {
-      judgeName: '',
-      text: '🤯',
-      score: 7,
-    },
-  };
+  reactionOptions = [
+    REACTION_OPTIONS.LAUGH,
+    REACTION_OPTIONS.POOP,
+    REACTION_OPTIONS.CLAP,
+    REACTION_OPTIONS.MINDBLOWN,
+  ];
 
+  endTopic: string = '/topic/end';
   reactionsDestination: string = '/game/reactions';
 
   routeSub$!: Subscription;
+  endGameSub$!: Subscription;
 
   constructor(
     private rxStompService: RxStompService,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
-    private playerService: PlayerService
+    private playerService: PlayerService,
+    private reactionService: ReactionService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,16 +44,29 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
     this.judge = this.playerService.getPlayer();
 
     // set reaction options
-    this.initReactionOptions(this.judge.name);
+    this.reactionOptions = this.initReactionOptions(this.judge.name);
 
     // get game id
     this.routeSub$ = this.activatedRoute.params.subscribe((params) => {
       this.gameId = params['gameId'];
       this.reactionsDestination = `${this.reactionsDestination}/${this.gameId}`;
+      this.endTopic = `${this.endTopic}/${this.gameId}`;
     });
+
+    this.endGameSub$ = this.rxStompService
+      .watch(this.endTopic)
+      .subscribe((message: Message) => {
+        console.log('>>> speaker has ended game');
+        this.router.navigate(['/game-over', this.gameId, 'judge']);
+      });
+  }
+
+  saveReaction(reaction: Reaction) {
+    this.reactionService.addReaction(reaction);
   }
 
   notifyReaction(reaction: Reaction) {
+    this.saveReaction(reaction);
     console.log('>>> sending reaction to speaker');
 
     this.rxStompService.publish({
@@ -72,13 +75,16 @@ export class GameJudgeViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  initReactionOptions(judgeName: string): void {
-    Object.entries(this.REACTION_OPTIONS).forEach(([key, val]) => {
-      val.judgeName = judgeName;
+  initReactionOptions(judgeName: string) {
+    return this.reactionOptions.map((r) => {
+      return {
+        ...r,
+        judgeName: judgeName,
+      };
     });
   }
-
   ngOnDestroy() {
     this.routeSub$.unsubscribe();
+    this.endGameSub$.unsubscribe();
   }
 }

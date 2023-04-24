@@ -7,5 +7,4 @@ export interface Game {
   assistant: Player;
   judges: Player[];
   deckMaterials: DeckMaterials;
-  timePerSlide: number;
 }

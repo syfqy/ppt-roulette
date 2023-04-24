@@ -1,0 +1,26 @@
+.speaker-main {
+    display: flex;
+    gap: 2rem;
+}
+
+.speaker-header, .speaker-footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.speaker-header {
+    gap: 1.5rem;
+}
+
+.reaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    font-size: 2rem;
+    min-width: 20%;
+}
+
+img {
+    max-height: 540px;
+}

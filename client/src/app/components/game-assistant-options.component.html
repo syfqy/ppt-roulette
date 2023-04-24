@@ -1,0 +1,26 @@
+<label>Which set of images do you want to play with?</label>
+<mat-radio-group [(ngModel)]="useOwnImages">
+  <mat-radio-button [value]="false">Default Game Images</mat-radio-button>
+  <mat-radio-button [value]="true">My Own Images</mat-radio-button>
+</mat-radio-group>
+<p>Use own images: {{ useOwnImages }}</p>
+
+<!-- if user opts to use own images -->
+<form
+  *ngIf="useOwnImages"
+  [formGroup]="form"
+  class="form"
+  (ngSubmit)="submitForm()"
+>
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" />
+  </mat-form-field>
+
+  <button mat-raised-button [disabled]="form.invalid">Submit</button>
+</form>
+
+<!-- after get user images -->
+<p *ngIf="!!nImages && !!email">
+  Found {{ nImages }} images for user: {{ email }}
+</p>

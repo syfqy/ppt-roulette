@@ -19,6 +19,8 @@ import { Image } from '../models/image.model';
 import { Message } from '@stomp/stompjs';
 import { Reaction } from '../models/reaction.model';
 import { ReactionService } from '../services/reaction.service';
+import { GameService } from '../services/game.service';
+import { GameResult } from '../models/game-result.model';
 
 @Component({
   selector: 'app-game-speaker-view',
@@ -35,6 +37,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   currSlideIdx: number = -1;
   currSlide!: Slide;
   numSlides!: number;
+  isGameOver: boolean = false;
 
   nextSlideEvent = new Subject<void>();
   currTemplate!: TemplateRef<any>;
@@ -46,11 +49,11 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
   imageSelectedTopic: string = '/topic/imageSelected';
 
   imageOptionsDestination: string = '/game/imageOptions';
+  endDestination: string = '/game/end';
 
   nextSlideSub$!: Subscription;
   reactionsTopicSub$!: Subscription;
   imageSelectedTopicSub$!: Subscription;
-  routeSub$!: Subscription;
 
   @ViewChild('topicTemplate')
   topicTemplate!: TemplateRef<any>;
@@ -63,6 +66,7 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
   constructor(
     private gameStateService: GameStateService,
+    private gameService: GameService,
     private playerService: PlayerService,
     private reactionService: ReactionService,
     private router: Router,
@@ -75,16 +79,18 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
 
     // get game
     this.game = this.gameStateService.getGame();
-    this.timeForCurrSlide = this.game.timePerSlide;
+    this.timeForCurrSlide = 3;
 
     // set up topics and destinations
     this.imageSelectedTopic = `${this.imageSelectedTopic}/${this.game.gameId}`;
     this.reactionsTopic = `${this.reactionsTopic}/${this.game.gameId}`;
     this.imageOptionsDestination = `${this.imageOptionsDestination}/${this.game.gameId}`;
+    this.endDestination = `${this.endDestination}/${this.game.gameId}`;
 
     // create deck from deck materials
     this.deck = Deck.createFromDeckMaterials(
-      this.game.deckMaterials as DeckMaterials
+      this.game.deckMaterials as DeckMaterials,
+      this.speaker.name
     );
     this.numSlides = this.deck.slides.length;
     console.log('>>> deck prepared');
@@ -93,15 +99,21 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     // subscribe to next slide event when timer up, change view to next slide
     this.nextSlideSub$ = this.nextSlideEvent.subscribe(() => {
       this.currSlideIdx++;
+
       this.currSlide = this.deck.getSlideByIdx(this.currSlideIdx);
       this.currTemplate = this.changeTemplate(this.currSlide);
+      this.timeForCurrSlide = this.currSlide.timeForSlide;
 
       // notify assistant of image options
-      if (this.currSlide.getType().toLowerCase() !== 'image') {
-        const i = Math.floor(this.currSlideIdx / 2);
-        console.log('>>> image options prepared');
-        console.log(this.deck.imageSelectionArrs[i]);
-        this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
+      if (this.currSlideIdx + 1 < this.numSlides) {
+        const nextSlide = this.deck.getSlideByIdx(this.currSlideIdx + 1);
+
+        if (nextSlide.getType().toLowerCase() === 'image') {
+          const i = Math.floor(this.currSlideIdx / 2);
+          console.log('>>> image options prepared');
+          console.log(this.deck.imageSelectionArrs[i]);
+          this.notifyImageOptions(this.deck.imageSelectionArrs[i]);
+        }
       }
     });
 
@@ -143,12 +155,10 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
           this.nextSlideEvent.next();
 
           // TODO: create clean up function to call when next slide
-          this.timeForCurrSlide = this.game.timePerSlide;
           this.timeElapsed = 0;
-          this.reactions = [];
         } else {
-          // TODO: call end round/game method
           clearInterval(timer);
+          this.endGame();
         }
       }
       this.timeElapsed += 0.1;
@@ -178,10 +188,43 @@ export class GameSpeakerViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  notifyEndGame() {
+    this.rxStompService.publish({
+      destination: this.endDestination,
+    });
+  }
+
+  endGame(): void {
+    // save score
+    const gameResult = this.createGameResult();
+    this.gameService
+      .saveGameResult(gameResult)
+      .then((res) => {
+        console.log(res);
+        // close game
+        this.notifyEndGame();
+
+        // navigate to game over view
+        this.router.navigate(['/game-over', this.game.gameId, 'speaker']);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  createGameResult(): GameResult {
+    const gameResult = {
+      gameId: this.game.gameId,
+      speakerName: this.speaker.name,
+      assistantName: this.game.assistant.name,
+      score: this.totalScore,
+    };
+    return gameResult;
+  }
+
   ngOnDestroy(): void {
     this.nextSlideSub$.unsubscribe();
     this.imageSelectedTopicSub$.unsubscribe();
     this.reactionsTopicSub$.unsubscribe();
-    this.routeSub$.unsubscribe();
   }
 }

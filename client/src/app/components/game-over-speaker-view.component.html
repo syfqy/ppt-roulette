@@ -1,0 +1,12 @@
+<!-- speaker view -->
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" />
+  </mat-form-field>
+
+  <button mat-raised-button [disabled]="form.invalid">
+    Send Result to Email
+  </button>
+</form>
+<button [routerLink]="['/']" mat-button>Back to Home</button>
