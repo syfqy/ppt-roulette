@@ -1,7 +1,6 @@
 <div class="speaker-main">
   <div class="speaker-slide">
     <div class="speaker-header" *ngIf="currSlideIdx > 1">
-      <h2>Topic: {{ game.deckMaterials.topic.topicText }}</h2>
       <h2>Score: {{ totalScore }}</h2>
     </div>
 
@@ -27,7 +26,7 @@
   </div>
 
   <div class="reaction-list">
-    <!-- TODO: Only show n most recent reaction -->
+    <h2>Judge(s) reactions:</h2>
     <p class="reaction" *ngFor="let reaction of reactions.slice(-5)">
       {{ reaction.judgeName }} : {{ reaction.text }}
     </p>
@@ -36,12 +35,11 @@
 <!-- projectable templates -->
 
 <ng-template #topicTemplate>
-  <h2>{{ currSlide.getContent() }}</h2>
+  <h2 class="topic">{{ currSlide.getContent() }}</h2>
 </ng-template>
 <ng-template #promptTemplate>
-  <h3>{{ currSlide.getContent() }}</h3>
+  <h3 class="prompt">{{ currSlide.getContent() }}</h3>
 </ng-template>
 <ng-template #imageTemplate>
-  <img style="max-width: 480px" [src]="currSlide.getContent()" />
+  <img [src]="currSlide.getContent()" />
 </ng-template>
-<!-- TODO: Add intro and end slides -->

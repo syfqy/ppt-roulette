@@ -1,26 +1,39 @@
 .speaker-main {
     display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 2rem;
+    font-size: 150%;
+    line-height: 120%;
+}
+
+.speaker-slide {
+    display: flex;
+    flex-direction: column;
 }
 
 .speaker-header, .speaker-footer {
     display: flex;
     justify-content: space-between;
-}
-
-.speaker-header {
     gap: 1.5rem;
 }
 
 .reaction-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.5rem;
-    font-size: 2rem;
-    min-width: 20%;
+    width: 30%;
+}
+
+.topic, .prompt {
+    font-family: 'Alfa Slab One';
+    font-size: 2.5rem;
+    line-height: 150%;
 }
 
 img {
+    min-height: 480px;
     max-height: 540px;
+    min-width: 900px;
+    max-width: 900px;
 }
+

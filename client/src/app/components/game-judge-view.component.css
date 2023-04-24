@@ -5,10 +5,10 @@
 
 .reaction-btn {
     background-color: whitesmoke;
-    height: 64px;
-    width: 64px;
-    font-size: 3rem;
-    border-radius: 8px;
+    height: 128px;
+    width: 128px;
+    font-size: 3.5rem;
+    border-radius: 12px;
     cursor: pointer;
     border: 0px;
 }

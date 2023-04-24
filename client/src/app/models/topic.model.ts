@@ -15,7 +15,7 @@ export class Topic implements Slide {
   }
 
   getContent(): string {
-    return this.topicText;
+    return this.topicText.toUpperCase();
   }
 
   getType(): string {

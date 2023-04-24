@@ -15,7 +15,7 @@ export class Prompt implements Slide {
   }
 
   getContent(): string {
-    return this.promptText;
+    return this.promptText.toUpperCase();
   }
 
   getType(): string {
